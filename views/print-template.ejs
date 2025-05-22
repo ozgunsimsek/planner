@@ -90,6 +90,19 @@
             align-items: center;
             margin-bottom: 10px;
             font-size: 13px;
+            cursor: move;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .subject-line:hover {
+            background-color: #f8f9fa;
+        }
+
+        .subject-line.dragging {
+            opacity: 0.5;
+            background-color: #e9ecef;
         }
 
         .subject-dot {
@@ -130,6 +143,11 @@
 
         .notes-content {
             min-height: 80px;
+        }
+
+        .day-box.drag-over {
+            background-color: #f8f9fa;
+            border: 2px dashed #1a73e8;
         }
 
         @media print {
@@ -182,10 +200,30 @@
         .print-button:hover {
             background: #1557b0;
         }
+
+        .save-button {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            padding: 10px 20px;
+            background: #34a853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .save-button:hover {
+            background: #2d9249;
+        }
     </style>
 </head>
 <body>
     <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+        <button onclick="saveSchedule()" class="save-button no-print">Değişiklikleri Kaydet</button>
         <button onclick="window.print()" class="print-button no-print">Yazdır</button>
     </div>
     <div class="header">
@@ -197,15 +235,21 @@
     <div class="week-grid">
         <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']; %>
         <% days.forEach(day => { %>
-            <div class="day-box">
+            <div class="day-box" data-day="<%= day %>" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                 <div class="day-title"><%= day %></div>
                 <% 
                 const daySchedule = student.weeklySchedule.find(schedule => schedule.day === day);
                 const subjects = daySchedule ? daySchedule.subjects : [];
                 %>
                 <% if (subjects && subjects.length > 0) { %>
-                    <% subjects.forEach(subject => { %>
-                        <div class="subject-line">
+                    <% subjects.forEach((subject, index) => { %>
+                        <div class="subject-line" 
+                             draggable="true" 
+                             ondragstart="drag(event)" 
+                             data-subject="<%= subject.subject %>"
+                             data-notes="<%= subject.notes || '' %>"
+                             data-day="<%= day %>"
+                             data-index="<%= index %>">
                             <div class="subject-dot"></div>
                             <div class="subject-text"><%= subject.subject %><% if (subject.notes) { %> - <%= subject.notes %><% } %></div>
                         </div>
@@ -227,5 +271,103 @@
             </div>
         <% }) %>
     </div>
+
+    <script>
+        let draggedItem = null;
+
+        function drag(event) {
+            draggedItem = event.target;
+            event.target.classList.add('dragging');
+            event.dataTransfer.setData('text/plain', '');
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drag-over');
+        }
+
+        function dragLeave(event) {
+            event.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const targetDay = event.currentTarget;
+            targetDay.classList.remove('drag-over');
+
+            if (draggedItem && targetDay !== draggedItem.parentElement) {
+                const subject = draggedItem.dataset.subject;
+                const notes = draggedItem.dataset.notes;
+                const newDay = targetDay.dataset.day;
+
+                // Eski konumdan kaldır
+                draggedItem.parentElement.removeChild(draggedItem);
+
+                // Yeni konuma ekle
+                const newSubjectLine = document.createElement('div');
+                newSubjectLine.className = 'subject-line';
+                newSubjectLine.draggable = true;
+                newSubjectLine.ondragstart = drag;
+                newSubjectLine.dataset.subject = subject;
+                newSubjectLine.dataset.notes = notes;
+                newSubjectLine.dataset.day = newDay;
+
+                newSubjectLine.innerHTML = `
+                    <div class="subject-dot"></div>
+                    <div class="subject-text">${subject}${notes ? ' - ' + notes : ''}</div>
+                `;
+
+                // Boş satırları kontrol et ve yeni dersi ekle
+                const emptyLines = targetDay.querySelectorAll('.subject-line:not([data-subject])');
+                if (emptyLines.length > 0) {
+                    targetDay.insertBefore(newSubjectLine, emptyLines[0]);
+                } else {
+                    targetDay.appendChild(newSubjectLine);
+                }
+            }
+
+            draggedItem.classList.remove('dragging');
+            draggedItem = null;
+        }
+
+        function saveSchedule() {
+            const schedule = {};
+            const dayBoxes = document.querySelectorAll('.day-box');
+            
+            dayBoxes.forEach(dayBox => {
+                const day = dayBox.dataset.day;
+                const subjects = [];
+                
+                dayBox.querySelectorAll('.subject-line[data-subject]').forEach(subjectLine => {
+                    subjects.push({
+                        subject: subjectLine.dataset.subject,
+                        notes: subjectLine.dataset.notes
+                    });
+                });
+                
+                schedule[day] = subjects;
+            });
+
+            // Sunucuya gönder
+            fetch(`/students/<%= student.id %>/schedule`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ subjects: Object.values(schedule).flat() })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Program başarıyla kaydedildi');
+                } else {
+                    alert('Program kaydedilirken bir hata oluştu');
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Program kaydedilirken bir hata oluştu');
+            });
+        }
+    </script>
 </body>
 </html> 
