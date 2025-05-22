@@ -52,7 +52,7 @@
                     <option value="Kimya">Kimya</option>
                     <option value="Biyoloji">Biyoloji</option>
                     <option value="Türkçe">Türkçe</option>
-                    <option value="İngilizce">İngilizce</option>
+                    <option value="Geometri">Geometri</option>
                     <option value="Tarih">Tarih</option>
                     <option value="Coğrafya">Coğrafya</option>
                 </select>
@@ -117,14 +117,126 @@
 <script>
 // Ders-Konu eşleştirmeleri
 const subjectTopics = {
-    'Matematik': ['Temel Kavramlar', 'Sayılar', 'Cebir', 'Geometri', 'Trigonometri', 'Türev', 'İntegral'],
-    'Fizik': ['Mekanik', 'Elektrik', 'Manyetizma', 'Optik', 'Termodinamik', 'Modern Fizik'],
-    'Kimya': ['Temel Kavramlar', 'Periyodik Sistem', 'Kimyasal Tepkimeler', 'Çözeltiler', 'Organik Kimya'],
-    'Biyoloji': ['Hücre', 'Canlıların Sınıflandırılması', 'Bitkiler', 'Hayvanlar', 'İnsan Fizyolojisi'],
-    'Türkçe': ['Dil Bilgisi', 'Anlatım Bozuklukları', 'Paragraf', 'Edebiyat', 'Şiir'],
-    'İngilizce': ['Grammar', 'Vocabulary', 'Reading', 'Writing', 'Speaking'],
-    'Tarih': ['İlk Çağ', 'Orta Çağ', 'Yeni Çağ', 'Yakın Çağ', 'Türk Tarihi'],
-    'Coğrafya': ['Fiziki Coğrafya', 'Beşeri Coğrafya', 'Ekonomik Coğrafya', 'Türkiye Coğrafyası']
+    'Matematik': [
+        'Temel Kavramlar',
+        'Sayılar',
+        'Rasyonel Sayılar',
+        'Mutlak Değer',
+        'Üslü Sayılar',
+        'Köklü Sayılar',
+        'Çarpanlara Ayırma',
+        'Oran-Orantı',
+        'Denklemler',
+        'Eşitsizlikler',
+        'Fonksiyonlar',
+        'Polinomlar',
+        'İkinci Dereceden Denklemler',
+        'Karmaşık Sayılar',
+        'Logaritma',
+        'Diziler',
+        'Seriler',
+        'Limit',
+        'Türev',
+        'İntegral'
+    ],
+    'Fizik': [
+        'Fizik Bilimine Giriş',
+        'Madde ve Özellikleri',
+        'Hareket ve Kuvvet',
+        'Enerji',
+        'Isı ve Sıcaklık',
+        'Elektrik ve Manyetizma',
+        'Basınç',
+        'Dalgalar',
+        'Optik',
+        'Atom Fiziği'
+    ],
+    'Kimya': [
+        'Kimya Bilimi',
+        'Atom ve Periyodik Sistem',
+        'Kimyasal Türler Arası Etkileşimler',
+        'Maddenin Halleri',
+        'Karışımlar',
+        'Asitler, Bazlar ve Tuzlar',
+        'Kimya Her Yerde',
+        'Kimyanın Temel Kanunları',
+        'Mol Kavramı',
+        'Kimyasal Tepkimeler'
+    ],
+    'Biyoloji': [
+        'Biyoloji Bilimi',
+        'Canlıların Yapısı',
+        'Hücre',
+        'Canlıların Çeşitliliği',
+        'Üreme',
+        'Kalıtım',
+        'Ekosistem',
+        'Güncel Çevre Sorunları',
+        'Canlılar ve Enerji',
+        'İnsan Fizyolojisi'
+    ],
+    'Türkçe': [
+        'Sözcükte Anlam',
+        'Cümlede Anlam',
+        'Paragrafta Anlam',
+        'Anlatım Teknikleri',
+        'Düşünceyi Geliştirme Yolları',
+        'Sözcük Türleri',
+        'Fiilimsiler',
+        'Cümlenin Ögeleri',
+        'Cümle Türleri',
+        'Anlatım Bozuklukları',
+        'Ses Bilgisi',
+        'Yazım Kuralları',
+        'Noktalama İşaretleri'
+    ],
+    'Geometri': [
+        'Temel Kavramlar',
+        'Doğruda Açılar',
+        'Üçgende Açılar',
+        'Üçgende Açı-Kenar Bağıntıları',
+        'Üçgende Alan',
+        'Üçgende Benzerlik',
+        'Dik Üçgen',
+        'İkizkenar Üçgen',
+        'Eşkenar Üçgen',
+        'Dörtgenler',
+        'Çokgenler',
+        'Çemberde Açılar',
+        'Çemberde Uzunluk',
+        'Dairede Alan',
+        'Katı Cisimler'
+    ],
+    'Tarih': [
+        'Tarih Bilimi',
+        'İlk Uygarlıklar',
+        'İlk Türk Devletleri',
+        'İslam Tarihi ve Uygarlığı',
+        'Türk-İslam Devletleri',
+        'Osmanlı Devleti Kuruluş Dönemi',
+        'Osmanlı Devleti Yükselme Dönemi',
+        'Osmanlı Devleti Duraklama Dönemi',
+        'Osmanlı Devleti Gerileme Dönemi',
+        'Osmanlı Devleti Dağılma Dönemi',
+        'Kurtuluş Savaşı',
+        'Atatürk Dönemi',
+        'Çağdaş Türk ve Dünya Tarihi'
+    ],
+    'Coğrafya': [
+        'Doğa ve İnsan',
+        'Dünya\'nın Şekli ve Hareketleri',
+        'Coğrafi Konum',
+        'Harita Bilgisi',
+        'İklim Bilgisi',
+        'Yerşekilleri',
+        'Nüfus ve Yerleşme',
+        'Türkiye\'nin Fiziki Özellikleri',
+        'Türkiye\'nin İklimi',
+        'Türkiye\'nin Nüfusu',
+        'Türkiye\'nin Ekonomik Coğrafyası',
+        'Bölgeler ve Ülkeler',
+        'Çevre ve Toplum'
+    ]
 };
 
 // Ders seçildiğinde konuları güncelle

@@ -10,7 +10,7 @@ global.testData = {
     coaches: [{
         id: '1',
         username: 'admin',
-        password: '123456', // Gerçek uygulamada hash'lenmiş olmalı
+        password: '123', // Gerçek uygulamada hash'lenmiş olmalı
         name: 'Test Koç',
         email: 'test@example.com'
     }],

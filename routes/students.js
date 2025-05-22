@@ -116,20 +116,18 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
             subject.subject && subject.subject.trim() !== ''
         );
 
-        // Dersleri günlere eşit dağıt
+        // Dersleri günlere sırayla dağıt
         const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
-        const subjectsPerDay = Math.ceil(filteredSubjects.length / days.length);
+        const weeklySchedule = days.map(day => ({ day, subjects: [] }));
         
-        // Haftalık programı güncelle
-        global.testData.students[studentIndex].weeklySchedule = days.map((day, dayIndex) => {
-            const startIndex = dayIndex * subjectsPerDay;
-            const daySubjects = filteredSubjects.slice(startIndex, startIndex + subjectsPerDay);
-            
-            return {
-                day,
-                subjects: daySubjects
-            };
+        // Her dersi sırayla günlere dağıt
+        filteredSubjects.forEach((subject, index) => {
+            const dayIndex = index % days.length; // 0-6 arası döngüsel indeks
+            weeklySchedule[dayIndex].subjects.push(subject);
         });
+
+        // Haftalık programı güncelle
+        global.testData.students[studentIndex].weeklySchedule = weeklySchedule;
 
         res.json({ success: true });
     } catch (error) {
