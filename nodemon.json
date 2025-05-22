@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "ignore": ["node_modules/*", ".git/*"],
+  "watch": ["*.js", "routes/*", "models/*", "views/*"],
+  "ext": "js,json,ejs",
+  "delay": "1000"
+} 

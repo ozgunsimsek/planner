@@ -66,22 +66,74 @@ router.get('/:id', isAuthenticated, async (req, res) => {
     }
 });
 
+// Print template
+router.get('/print-template/:id', isAuthenticated, async (req, res) => {
+    try {
+        const student = global.testData.students.find(
+            s => s.id === req.params.id && s.coach === req.session.userId
+        );
+        
+        if (!student) {
+            return res.redirect('/students');
+        }
+
+        // Tüm dersleri tek bir array'de topla
+        const allSubjects = student.weeklySchedule.reduce((acc, schedule) => {
+            return [...acc, ...schedule.subjects];
+        }, []);
+
+        // Student objesine subjects array'ini ekle
+        const studentWithSubjects = {
+            ...student,
+            subjects: allSubjects
+        };
+
+        res.render('print-template', { student: studentWithSubjects });
+    } catch (error) {
+        res.redirect('/students');
+    }
+});
+
 // Haftalık program güncelleme
 router.post('/:id/schedule', isAuthenticated, async (req, res) => {
     try {
-        const weeklySchedule = JSON.parse(req.body.weeklySchedule);
         const studentIndex = global.testData.students.findIndex(
             s => s.id === req.params.id && s.coach === req.session.userId
         );
         
-        if (studentIndex !== -1) {
-            global.testData.students[studentIndex].weeklySchedule = weeklySchedule;
-            global.testData.students[studentIndex].generalNotes = req.body.generalNotes || '';
-            res.json({ success: true });
-        } else {
-            res.status(404).json({ error: 'Öğrenci bulunamadı' });
+        if (studentIndex === -1) {
+            return res.status(404).json({ error: 'Öğrenci bulunamadı' });
         }
+
+        const { subjects } = req.body;
+        
+        if (!Array.isArray(subjects)) {
+            return res.status(400).json({ error: 'Geçersiz veri formatı' });
+        }
+
+        // Boş dersleri filtrele
+        const filteredSubjects = subjects.filter(subject => 
+            subject.subject && subject.subject.trim() !== ''
+        );
+
+        // Dersleri günlere eşit dağıt
+        const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+        const subjectsPerDay = Math.ceil(filteredSubjects.length / days.length);
+        
+        // Haftalık programı güncelle
+        global.testData.students[studentIndex].weeklySchedule = days.map((day, dayIndex) => {
+            const startIndex = dayIndex * subjectsPerDay;
+            const daySubjects = filteredSubjects.slice(startIndex, startIndex + subjectsPerDay);
+            
+            return {
+                day,
+                subjects: daySubjects
+            };
+        });
+
+        res.json({ success: true });
     } catch (error) {
+        console.error('Program güncelleme hatası:', error);
         res.status(500).json({ error: 'Program güncellenirken bir hata oluştu' });
     }
 });

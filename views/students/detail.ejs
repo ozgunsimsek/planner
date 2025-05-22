@@ -18,10 +18,10 @@
     </div>
 </div>
 
-<!-- Normal görünüm -->
+<!-- Öğrenci Bilgileri -->
 <div class="card mb-4">
     <div class="card-body">
-        <div class="d-flex align-items-center mb-4">
+        <div class="d-flex align-items-center">
             <div class="profile-icon">
                 <i class="bi bi-person"></i>
             </div>
@@ -33,129 +33,219 @@
     </div>
 </div>
 
-<!-- Yazdırılabilir Plan Görünümü -->
-
-<!-- Yazdırma Stilleri -->
-
-<!-- Normal form görünümü -->
-<div class="card">
-    <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']; %>
-    <div class="card-header d-flex justify-content-between align-items-center">
+<!-- Ders Ekleme Formu -->
+<div class="card mb-4">
+    <div class="card-header">
         <h4 class="mb-0">
-            <i class="bi bi-calendar-week me-2"></i>
-            Program Düzenle
+            <i class="bi bi-plus-circle me-2"></i>
+            Ders Ekle
         </h4>
     </div>
     <div class="card-body">
-        <form id="scheduleForm" action="/students/<%= student.id %>/schedule" method="POST">
-            <% /* days değişkeni yukarıda tanımlandı */ %>
-            <% days.forEach((day, dayIndex) => { %>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-calendar-day me-2"></i>
-                            <%= day %>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="subjects-container" id="subjects-<%= day %>">
-                            <% const daySchedule = student.weeklySchedule.find(s => s.day === day) || { subjects: [] } %>
-                            
-                            <% daySchedule.subjects.forEach((subject, index) => { %>
-                                <div class="subject-entry">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label class="form-label">Ders</label>
-                                                <input type="text" class="form-control" 
-                                                    name="weeklySchedule[<%= dayIndex %>][subjects][<%= index %>][subject]"
-                                                    value="<%= subject.subject %>" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8">
-                                            <div class="form-group">
-                                                <label class="form-label">Notlar</label>
-                                                <input type="text" class="form-control" 
-                                                    name="weeklySchedule[<%= dayIndex %>][subjects][<%= index %>][notes]"
-                                                    value="<%= subject.notes || '' %>">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-1 d-flex align-items-end">
-                                            <button type="button" class="btn btn-outline-danger remove-subject">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            <% }) %>
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm add-subject mt-2" data-day="<%= day %>" data-day-index="<%= dayIndex %>">
-                            <i class="bi bi-plus me-1"></i>
-                            Ders Ekle
-                        </button>
-                    </div>
-                </div>
-            <% }) %>
-
-            <div class="mb-3">
-                <label for="generalNotes" class="form-label">Haftalık Genel Notlar</label>
-                <textarea class="form-control" id="generalNotes" name="generalNotes" rows="3"><%= student.generalNotes || '' %></textarea>
+        <form id="addSubjectForm" class="row g-3">
+            <div class="col-md-5">
+                <label class="form-label">Ders</label>
+                <select class="form-select" id="subjectSelect" required>
+                    <option value="">Ders Seçin</option>
+                    <option value="Matematik">Matematik</option>
+                    <option value="Fizik">Fizik</option>
+                    <option value="Kimya">Kimya</option>
+                    <option value="Biyoloji">Biyoloji</option>
+                    <option value="Türkçe">Türkçe</option>
+                    <option value="İngilizce">İngilizce</option>
+                    <option value="Tarih">Tarih</option>
+                    <option value="Coğrafya">Coğrafya</option>
+                </select>
             </div>
-
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-save me-2"></i>
-                    Programı Kaydet
+            <div class="col-md-5">
+                <label class="form-label">Konu</label>
+                <select class="form-select" id="topicSelect" required>
+                    <option value="">Önce Ders Seçin</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Ekle
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.add-subject').forEach(button => {
-        button.addEventListener('click', function() {
-            const dayIndex = this.dataset.dayIndex;
-            const container = this.parentElement.querySelector('.subjects-container');
-            const subjectCount = container.children.length;
-            
-            const template = `
-                <div class="subject-entry">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="form-label">Ders</label>
-                                <input type="text" class="form-control" 
-                                    name="weeklySchedule[${dayIndex}][subjects][${subjectCount}][subject]"
-                                    placeholder="Ders" required>
-                            </div>
+<!-- Haftalık Plan -->
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="bi bi-calendar-week me-2"></i>
+            Haftalık Plan
+        </h4>
+    </div>
+    <div class="card-body">
+        <div id="subjectsContainer" class="mb-4">
+            <% if (student.weeklySchedule && student.weeklySchedule[0] && student.weeklySchedule[0].subjects) { %>
+                <% student.weeklySchedule[0].subjects.forEach((subject, subjectIndex) => { %>
+                    <div class="subject-row d-flex align-items-center gap-3 mb-3">
+                        <div class="flex-grow-1">
+                            <input type="text" 
+                                   name="subjects[<%= subjectIndex %>][subject]" 
+                                   value="<%= subject.subject %>"
+                                   class="form-control"
+                                   placeholder="Ders adı"
+                                   onchange="autoSave()">
                         </div>
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label class="form-label">Notlar</label>
-                                <input type="text" class="form-control" 
-                                    name="weeklySchedule[${dayIndex}][subjects][${subjectCount}][notes]"
-                                    placeholder="Notlar">
-                            </div>
+                        <div class="flex-grow-1">
+                            <input type="text" 
+                                   name="subjects[<%= subjectIndex %>][notes]" 
+                                   value="<%= subject.notes %>"
+                                   class="form-control"
+                                   placeholder="Notlar"
+                                   onchange="autoSave()">
                         </div>
-                        <div class="col-md-1 d-flex align-items-end">
-                            <button type="button" class="btn btn-outline-danger remove-subject">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
+                        <button type="button" 
+                                onclick="removeSubject(this)"
+                                class="btn btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
-                </div>
-            `;
-            
-            container.insertAdjacentHTML('beforeend', template);
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+// Ders-Konu eşleştirmeleri
+const subjectTopics = {
+    'Matematik': ['Temel Kavramlar', 'Sayılar', 'Cebir', 'Geometri', 'Trigonometri', 'Türev', 'İntegral'],
+    'Fizik': ['Mekanik', 'Elektrik', 'Manyetizma', 'Optik', 'Termodinamik', 'Modern Fizik'],
+    'Kimya': ['Temel Kavramlar', 'Periyodik Sistem', 'Kimyasal Tepkimeler', 'Çözeltiler', 'Organik Kimya'],
+    'Biyoloji': ['Hücre', 'Canlıların Sınıflandırılması', 'Bitkiler', 'Hayvanlar', 'İnsan Fizyolojisi'],
+    'Türkçe': ['Dil Bilgisi', 'Anlatım Bozuklukları', 'Paragraf', 'Edebiyat', 'Şiir'],
+    'İngilizce': ['Grammar', 'Vocabulary', 'Reading', 'Writing', 'Speaking'],
+    'Tarih': ['İlk Çağ', 'Orta Çağ', 'Yeni Çağ', 'Yakın Çağ', 'Türk Tarihi'],
+    'Coğrafya': ['Fiziki Coğrafya', 'Beşeri Coğrafya', 'Ekonomik Coğrafya', 'Türkiye Coğrafyası']
+};
+
+// Ders seçildiğinde konuları güncelle
+document.getElementById('subjectSelect').addEventListener('change', function() {
+    const topicSelect = document.getElementById('topicSelect');
+    const selectedSubject = this.value;
+    
+    topicSelect.innerHTML = '<option value="">Konu Seçin</option>';
+    
+    if (selectedSubject && subjectTopics[selectedSubject]) {
+        subjectTopics[selectedSubject].forEach(topic => {
+            const option = document.createElement('option');
+            option.value = topic;
+            option.textContent = topic;
+            topicSelect.appendChild(option);
         });
+    }
+});
+
+// Yeni ders ekleme
+document.getElementById('addSubjectForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const subject = document.getElementById('subjectSelect').value;
+    const topic = document.getElementById('topicSelect').value;
+    
+    if (!subject || !topic) return;
+    
+    const container = document.getElementById('subjectsContainer');
+    const subjectCount = container.children.length;
+    
+    const subjectRow = document.createElement('div');
+    subjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3';
+    subjectRow.innerHTML = `
+        <div class="flex-grow-1">
+            <input type="text" 
+                   name="subjects[${subjectCount}][subject]" 
+                   value="${subject}"
+                   class="form-control"
+                   placeholder="Ders adı"
+                   onchange="autoSave()">
+        </div>
+        <div class="flex-grow-1">
+            <input type="text" 
+                   name="subjects[${subjectCount}][notes]" 
+                   value="${topic}"
+                   class="form-control"
+                   placeholder="Notlar"
+                   onchange="autoSave()">
+        </div>
+        <button type="button" 
+                onclick="removeSubject(this)"
+                class="btn btn-outline-danger">
+            <i class="bi bi-trash"></i>
+        </button>
+    `;
+    
+    container.appendChild(subjectRow);
+    
+    // Formu sıfırla
+    this.reset();
+    document.getElementById('topicSelect').innerHTML = '<option value="">Önce Ders Seçin</option>';
+
+    // Otomatik kaydet
+    await autoSave();
+});
+
+// Ders silme
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-subject') || e.target.closest('.remove-subject')) {
+        const button = e.target.classList.contains('remove-subject') ? e.target : e.target.closest('.remove-subject');
+        button.closest('.subject-entry').remove();
+    }
+});
+
+function removeSubject(button) {
+    const row = button.closest('.subject-row');
+    row.remove();
+    
+    // Kalan derslerin indekslerini güncelle
+    const container = document.getElementById('subjectsContainer');
+    const rows = container.getElementsByClassName('subject-row');
+    Array.from(rows).forEach((row, index) => {
+        const inputs = row.getElementsByTagName('input');
+        inputs[0].name = `subjects[${index}][subject]`;
+        inputs[1].name = `subjects[${index}][notes]`;
     });
 
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-subject') || e.target.closest('.remove-subject')) {
-            const button = e.target.classList.contains('remove-subject') ? e.target : e.target.closest('.remove-subject');
-            button.closest('.subject-entry').remove();
+    // Otomatik kaydet
+    autoSave();
+}
+
+async function autoSave() {
+    const container = document.getElementById('subjectsContainer');
+    const rows = container.getElementsByClassName('subject-row');
+    const subjects = [];
+
+    Array.from(rows).forEach(row => {
+        const inputs = row.getElementsByTagName('input');
+        const subject = inputs[0].value.trim();
+        const notes = inputs[1].value.trim();
+        
+        if (subject) {
+            subjects.push({ subject, notes });
         }
     });
-});</script> 
+
+    try {
+        const response = await fetch(`/students/<%= student.id %>/schedule`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ subjects })
+        });
+        
+        if (!response.ok) {
+            console.error('Program kaydedilirken bir hata oluştu');
+        }
+    } catch (error) {
+        console.error('Hata:', error);
+    }
+}
+</script> 

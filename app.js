@@ -23,16 +23,7 @@ global.testData = {
         weeklySchedule: [
             {
                 day: 'Pazartesi',
-                subjects: [
-                    {
-                        subject: 'Matematik',
-                        notes: 'İyi çalış'
-                    },
-                    {
-                        subject: 'Fizik',
-                        notes: 'İyi çalış'
-                    }
-                ]
+                subjects: []
             },
             {
                 day: 'Salı',

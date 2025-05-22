@@ -195,13 +195,16 @@
     </div>
 
     <div class="week-grid">
-        <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'] %>
+        <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']; %>
         <% days.forEach(day => { %>
             <div class="day-box">
                 <div class="day-title"><%= day %></div>
-                <% const daySchedule = student.weeklySchedule.find(s => s.day === day) %>
-                <% if (daySchedule && daySchedule.subjects.length > 0) { %>
-                    <% daySchedule.subjects.forEach(subject => { %>
+                <% 
+                const daySchedule = student.weeklySchedule.find(schedule => schedule.day === day);
+                const subjects = daySchedule ? daySchedule.subjects : [];
+                %>
+                <% if (subjects && subjects.length > 0) { %>
+                    <% subjects.forEach(subject => { %>
                         <div class="subject-line">
                             <div class="subject-dot"></div>
                             <div class="subject-text"><%= subject.subject %><% if (subject.notes) { %> - <%= subject.notes %><% } %></div>
@@ -223,35 +226,6 @@
                 <% } %>
             </div>
         <% }) %>
-        <div class="day-box">
-            <div class="day-title">Pazar</div>
-            <% const pazarSchedule = student.weeklySchedule.find(s => s.day === 'Pazar') %>
-            <% if (pazarSchedule && pazarSchedule.subjects.length > 0) { %>
-                <% pazarSchedule.subjects.forEach(subject => { %>
-                    <div class="subject-line">
-                        <div class="subject-dot"></div>
-                        <div class="subject-text"><%= subject.subject %><% if (subject.notes) { %> - <%= subject.notes %><% } %></div>
-                    </div>
-                <% }) %>
-            <% } else { %>
-                <div class="subject-line">
-                    <div class="subject-dot"></div>
-                    <div class="subject-text"></div>
-                </div>
-                <div class="subject-line">
-                    <div class="subject-dot"></div>
-                    <div class="subject-text"></div>
-                </div>
-                <div class="subject-line">
-                    <div class="subject-dot"></div>
-                    <div class="subject-text"></div>
-                </div>
-            <% } %>
-        </div>
-        <div class="notes-box">
-            <div class="notes-title">Notlar</div>
-            <div class="notes-content"><%= student.generalNotes || "" %></div>
-        </div>
     </div>
 </body>
 </html> 
