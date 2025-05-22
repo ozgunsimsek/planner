@@ -1,0 +1,161 @@
+<%- contentFor('body') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+        <a href="/students" class="btn btn-outline-secondary me-3">
+            <i class="bi bi-arrow-left me-2"></i>
+            Geri Dön
+        </a>
+        <h2 class="mb-0">
+            <i class="bi bi-person me-2"></i>
+            Öğrenci Detayı
+        </h2>
+    </div>
+    <div>
+        <a href="/print-template/<%= student.id %>" target="_blank" class="btn btn-primary">
+            Plan Görüntüle
+        </a>
+    </div>
+</div>
+
+<!-- Normal görünüm -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center mb-4">
+            <div class="profile-icon">
+                <i class="bi bi-person"></i>
+            </div>
+            <div>
+                <h3 class="card-title mb-1"><%= student.name %></h3>
+                <p class="text-muted mb-0"><%= student.email %> | <%= student.grade %>. Sınıf</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Yazdırılabilir Plan Görünümü -->
+
+<!-- Yazdırma Stilleri -->
+
+<!-- Normal form görünümü -->
+<div class="card">
+    <% const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']; %>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+            <i class="bi bi-calendar-week me-2"></i>
+            Program Düzenle
+        </h4>
+    </div>
+    <div class="card-body">
+        <form id="scheduleForm" action="/students/<%= student.id %>/schedule" method="POST">
+            <% /* days değişkeni yukarıda tanımlandı */ %>
+            <% days.forEach((day, dayIndex) => { %>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-day me-2"></i>
+                            <%= day %>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="subjects-container" id="subjects-<%= day %>">
+                            <% const daySchedule = student.weeklySchedule.find(s => s.day === day) || { subjects: [] } %>
+                            
+                            <% daySchedule.subjects.forEach((subject, index) => { %>
+                                <div class="subject-entry">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="form-label">Ders</label>
+                                                <input type="text" class="form-control" 
+                                                    name="weeklySchedule[<%= dayIndex %>][subjects][<%= index %>][subject]"
+                                                    value="<%= subject.subject %>" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                                <label class="form-label">Notlar</label>
+                                                <input type="text" class="form-control" 
+                                                    name="weeklySchedule[<%= dayIndex %>][subjects][<%= index %>][notes]"
+                                                    value="<%= subject.notes || '' %>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1 d-flex align-items-end">
+                                            <button type="button" class="btn btn-outline-danger remove-subject">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm add-subject mt-2" data-day="<%= day %>" data-day-index="<%= dayIndex %>">
+                            <i class="bi bi-plus me-1"></i>
+                            Ders Ekle
+                        </button>
+                    </div>
+                </div>
+            <% }) %>
+
+            <div class="mb-3">
+                <label for="generalNotes" class="form-label">Haftalık Genel Notlar</label>
+                <textarea class="form-control" id="generalNotes" name="generalNotes" rows="3"><%= student.generalNotes || '' %></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-2"></i>
+                    Programı Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-subject').forEach(button => {
+        button.addEventListener('click', function() {
+            const dayIndex = this.dataset.dayIndex;
+            const container = this.parentElement.querySelector('.subjects-container');
+            const subjectCount = container.children.length;
+            
+            const template = `
+                <div class="subject-entry">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Ders</label>
+                                <input type="text" class="form-control" 
+                                    name="weeklySchedule[${dayIndex}][subjects][${subjectCount}][subject]"
+                                    placeholder="Ders" required>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="form-label">Notlar</label>
+                                <input type="text" class="form-control" 
+                                    name="weeklySchedule[${dayIndex}][subjects][${subjectCount}][notes]"
+                                    placeholder="Notlar">
+                            </div>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-outline-danger remove-subject">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', template);
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-subject') || e.target.closest('.remove-subject')) {
+            const button = e.target.classList.contains('remove-subject') ? e.target : e.target.closest('.remove-subject');
+            button.closest('.subject-entry').remove();
+        }
+    });
+});</script> 
