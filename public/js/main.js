@@ -6,8 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             
             // Her gün için subjects dizisini düzenle
-            const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
-            const weeklySchedule = days.map((day, dayIndex) => {
+            const weeklySchedule = global.days.map((day, dayIndex) => {
                 const subjects = [];
                 const container = document.getElementById(`subjects-${day}`);
                 const entries = container.getElementsByClassName('subject-entry');

@@ -117,12 +117,11 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
         );
 
         // Dersleri günlere sırayla dağıt
-        const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
-        const weeklySchedule = days.map(day => ({ day, subjects: [] }));
+        const weeklySchedule = global.days.map(day => ({ day, subjects: [] }));
         
         // Her dersi sırayla günlere dağıt
         filteredSubjects.forEach((subject, index) => {
-            const dayIndex = index % days.length; // 0-6 arası döngüsel indeks
+            const dayIndex = index % global.days.length; // 0-6 arası döngüsel indeks
             weeklySchedule[dayIndex].subjects.push(subject);
         });
 
