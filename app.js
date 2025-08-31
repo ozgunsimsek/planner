@@ -17,8 +17,11 @@ try {
     subjectsData = [];
 }
 
-// Global günler array'i
-global.days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar', 'Notlar'];
+// Sadece ders günleri (Notlar hariç)
+global.schoolDays = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+
+// Global bölümler array'i (ders günleri + notlar)
+global.sections = [...global.schoolDays, 'Notlar'];
 
 // Test verileri
 global.testData = {
@@ -35,7 +38,7 @@ global.testData = {
         grade: '11',
         email: 'furkan@example.com',
         coach: '1',
-        weeklySchedule: global.days.map(day => ({
+        weeklySchedule: global.schoolDays.map(day => ({
             day: day,
             subjects: []
         }))

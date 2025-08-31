@@ -26,7 +26,7 @@ router.get('/new', isAuthenticated, (req, res) => {
 router.post('/', isAuthenticated, async (req, res) => {
     try {
         const { name, email, grade } = req.body;
-        const days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+        const days = global.sections;
         
         const newStudent = {
             id: generateId(),
@@ -116,12 +116,12 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
             subject.subject && subject.subject.trim() !== ''
         );
 
-        // Dersleri günlere sırayla dağıt
-        const weeklySchedule = global.days.map(day => ({ day, subjects: [] }));
+        // Dersleri günlere sırayla dağıt (sadece ders günleri)
+        const weeklySchedule = global.schoolDays.map(day => ({ day, subjects: [] }));
         
         // Her dersi sırayla günlere dağıt
         filteredSubjects.forEach((subject, index) => {
-            const dayIndex = index % global.days.length; // 0-6 arası döngüsel indeks
+            const dayIndex = index % global.schoolDays.length; // 0-6 arası döngüsel indeks
             weeklySchedule[dayIndex].subjects.push(subject);
         });
 

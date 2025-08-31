@@ -17,7 +17,7 @@ const studentSchema = new mongoose.Schema({
     weeklySchedule: [{
         day: {
             type: String,
-            enum: global.days || ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'],
+            enum: global.schoolDays || ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'],
             required: true
         },
         subjects: [{

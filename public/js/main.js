@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
         scheduleForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Her gün için subjects dizisini düzenle
-            const weeklySchedule = global.days.map((day, dayIndex) => {
+            // Her gün için subjects dizisini düzenle (sadece ders günleri)
+            const weeklySchedule = global.schoolDays.map((day, dayIndex) => {
                 const subjects = [];
                 const container = document.getElementById(`subjects-${day}`);
                 const entries = container.getElementsByClassName('subject-entry');
