@@ -390,7 +390,7 @@
                                  data-day="<%= day %>"
                                  data-index="<%= index %>">
                                 <div class="subject-dot"></div>
-                                <div class="subject-text"><%= subject.subject %><% if (subject.notes) { %> - <%= subject.notes %><% } %></div>
+                                <div class="subject-text"><strong><%= subject.subject %></strong><% if (subject.notes) { %> - <span><%= subject.notes %></span><% } %></div>
                             </div>
                         <% }) %>
                         <% 
