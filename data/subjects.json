@@ -1,0 +1,363 @@
+[
+    {
+      "values" : [
+        "Gerçek Sayılar - 1",
+        "Gerçek Sayılar - 2",
+        "Faktöriyel Kavramı",
+        "Basamak Kavramı",
+        "Görsel Zeka",
+        "Sayısal - Sözel Mantık",
+        "Örüntülü Sayı Grupları",
+        "I ve II Bilinmeyenli Denklemler",
+        "I ve II Bilinmeyenli Eşitsizlikler",
+        "Mutlak Değer",
+        "Üslü Sayılar",
+        "Köklü Sayılar",
+        "Tanım ve Formül Kullanabilme",
+        "Oran - Orantı",
+        "Çarpanlara Ayırma",
+        "Sayı Problemleri",
+        "Kesir Problemleri",
+        "Yaş Problemleri",
+        "Yüzde Problemleri",
+        "Karışım Problemleri",
+        "Hız Problemleri",
+        "Grafik Yorumlama",
+        "Emek Problemleri",
+        "Asal Çarpanlar",
+        "Bölme - Bölünebilme",
+        "EBOB - EKOK",
+        "Mantık",
+        "Kümeler - Kartezyen Çarpım",
+        "Fonksiyonlar",
+        "Sayma - Olasılık"
+      ],
+      "title" : "TYT MATEMATİK"
+    },
+    {
+      "title" : "TYT KİMYA",
+      "values" : [
+        "Kimya Bilimi",
+        "Simgadan Kimyaya",
+        "Başlıca Kimya Disiplinleri",
+        "Başlıca Kimya Endüstrileri, Kimya Alanı ile İlgili Başlıca Meslekler",
+        "Elementler ve Semboller",
+        "Bileşikler",
+        "Kimya Uygulamalarında İnsan Sağlığı ve Güvenliği",
+        "Kimyasal Maddelerin İnsan Sağlığı ve Çevre Üzerindeki Etkileri",
+        "Atom Modelleri",
+        "Atomdaki Temel Tanecikler",
+        "İzotop, İzobar",
+        "İzoton, İzomerlik",
+        "Periyodik Sistem, Elementlerin Sınıflandırılması",
+        "Katman Elektron Dizilimi",
+        "Periyodik Sistemde Bazı Gruplar ve Özellikleri",
+        "Periyodik Özellikler ve Değişimi",
+        "Kimyasal Türler",
+        "Atomik Kararlılık ve Dublet - Oktet Kuralı",
+        "Kovalent Bağ ve Kovalent Bileşiklerin Oluşumu",
+        "Kovalent Bileşiklerin Adlandırılması",
+        "Kovalent Bağlarda Polarlık",
+        "Kovalent Bağlarda Polarlık ve Metalik Bağ",
+        "Zayıf Etkileşimler",
+        "Fiziksel ve Kimyasal Değişimler",
+        "Maddenin Farklı Halleri",
+        "Katılar ve Özellikleri",
+        "Sıvıların Özellikleri ve Viskozite",
+        "Buharlaşma - Yoğuşma ve Denge Buhar Basıncı",
+        "Atmosferde Su Buharı",
+        "Gazların Genel Özellikleri",
+        "Hal Değişimi",
+        "Hal Değişim Grafikleri",
+        "Doğa ve Kimya",
+        "Su ve Hayat",
+        "Çevre Kimyası",
+        "Kimyanın Temel Kanunları",
+        "Kütlenin Korunumu Kanunu",
+        "Sabit Oranlar Kanunu",
+        "Katı Oranlar Kanunu"
+      ]
+    },
+    {
+      "title" : "TYT GEOMETRİ",
+      "values" : [
+        "Açılar",
+        "Özel Üçgenler",
+        "Benzerlik",
+        "Üçgende Yardımcı Elemanlar",
+        "Üçgende Alan",
+        "Genel Dörtgenler - Yamuk",
+        "Paralelkenar - Eşkenar Dörtgen - Deltoid",
+        "Dikdörtgen - Kare",
+        "Çokgenler"
+      ]
+    },
+    {
+      "title" : "TYT BİYOLOJİ",
+      "values" : [
+        "Biyoloji ve Canlıların Ortak Özellikleri",
+        "İnorganik Bileşikler, Karbohidratlar, Lipitler, Proteinler, Vitaminler",
+        "Enzimler",
+        "Nükleik Asitler",
+        "ATP ve Sağlıklı Beslenme",
+        "Hücrenin Yapısı",
+        "Hücre Zarından Madde Geçişleri",
+        "Canlıların Çeşitliliği ve Sınıflandırılması",
+        "Canlı Âlemleri ve Virüsler",
+        "Hücre Bölünmeleri",
+        "Eşeyli ve Eşeysiz Üreme",
+        "Mendel Genetiği, Eş Baskınlık, Çok Allellilik, Kan Grupları",
+        "Eşeye Bağlı Kalıtım ve Genetik Varyasyonlar",
+        "Ekosistem Ekolojisi ve Güncel Çevre Sorunları"
+      ]
+    },
+    {
+      "title" : "TYT FİZİK",
+      "values" : [
+        "Fizik Bilimine Giriş",
+        "Madde ve Özellikleri",
+        "Hareket",
+        "Kuvvet",
+        "Enerji",
+        "Isı ve Sıcaklık",
+        "Elektrostatik",
+        "Elektrik Akımı",
+        "Manyetizma",
+        "Basınç",
+        "Kaldırma Kuvveti",
+        "Yay Dalgaları",
+        "Su Dalgaları",
+        "Ses ve Deprem Dalgası",
+        "Işık Akısı - Aydınlanma - Gölge Olayları",
+        "Yansıma ve Düzlem Aynalar",
+        "Yansıma ve Küresel Aynalar",
+        "Işığın Kırılması",
+        "Mercekler"
+      ]
+    },
+    {
+      "title" : "TARİH",
+      "values" : [
+        "Tarih ve Zaman",
+        "İnsanlığın İlk Dönemleri",
+        "Orta Çağda Dünya",
+        "İlk ve Orta Çağlarda Türk Dünyası",
+        "İslam Medeniyetinin Doğuşu",
+        "Türklerin İslamiyet'i Kabulü ve İlk Türk İslam Devletleri",
+        "Yükselme ve Devletleşme Sürecinde Çeşitli Türk Devletleri",
+        "Beylikten Devlete Osmanlı Siyaseti",
+        "Dünya Gücü Osmanlı (1453-1595)",
+        "Beylikten Devlete Osmanlı Medeniyeti (1453-1595)",
+        "Değişen Dünya Dengelerinde Osmanlı Siyaseti (1555-1774)",
+        "Değişim Çağında Avrupa ve Osmanlı",
+        "Devrimlerle Değişen Devlet - Toplum İlişkileri",
+        "Sermaye ve Emek",
+        "Kök ve XX. Yüzyılda Değişen Günlük Hayat",
+        "XX. Yüzyıl Başlarında Osmanlı Devleti ve Dünya",
+        "Atatürkçülük ve Türk İnkılabı",
+        "I. Dünya Savaşı Sonrası Türkiye ve Dünya",
+        "II. Dünya Savaşı Sonrası Türkiye ve Dünya",
+        "Atatürkçülük ve Türk İnkılabı",
+        "I. Dünya Savaşından Sonra Türkiye ve Dünya (1919-1938)",
+        "II. Dünya Savaşı Sürecinde Türkiye ve Dünya",
+        "Toplumsal Devrim Çağında Dünya ve Türkiye",
+        "XX. Yüzyılın Eşiğinde Türkiye ve Dünya"
+      ]
+    },
+    {
+      "title" : "Dil Bilgisi",
+      "values" : [
+        "Sözcükte Anlam",
+        "Deyim ve Atasözü",
+        "Cümlede Kavramlar",
+        "Cümle Yorumu",
+        "Anlatım Teknikleri",
+        "Paragraf Yorumu",
+        "Paragrafta Yardımcı Düşünce",
+        "Paragraf Yapısı",
+        "Ses Bilgisi",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "İsim (Ad)",
+        "Sıfat (On-Ad)",
+        "Zamir (Adıl)",
+        "Zarf (Belirtili)",
+        "Edat (İlgeç) - Bağlaç - Ünlem",
+        "Tamlamalar",
+        "Fiil Çekimi",
+        "Ek Fiil",
+        "Fiilde Yapı",
+        "Fiilimsiler",
+        "Fiilde Çatı",
+        "Anlama Dayalı Anlatım Bozuklukları",
+        "Dil Bilgisine Dayalı Anlatım Bozuklukları",
+        "Karma Dil Bilgisi"
+      ]
+    },
+    {
+      "title" : "AYT MATEMATİK",
+      "values" : [
+        "Polinomlar",
+        "İkinci Dereceden Denklemler",
+        "Parabol",
+        "Eşitsizlikler",
+        "Trigonometri - I",
+        "Trigonometri - II",
+        "Logaritma",
+        "Diziler",
+        "Fonksiyonlar",
+        "Limit - Süreklilik",
+        "Türev - I",
+        "Türev - II",
+        "Integral - I",
+        "Integral - II",
+        "Sayma - Olasılık"
+      ]
+    },
+    {
+      "title" : "AYT KİMYA",
+      "values" : [
+        "Modern Atom Teorisi",
+        "Gazlar",
+        "Sıvı Özellikleri ve Görünürlük",
+        "Kimyasal Tepkimelerde Enerji",
+        "Kimyasal Tepkimelerde Hız",
+        "Kimyasal Tepkimelerde Denge",
+        "Sıvı Çözeltisi Dengelemesi",
+        "Kimya ve Elektrik",
+        "Karbon Kimyasına Giriş",
+        "Organik Bileşikler",
+        "Organik Bileşikler 2",
+        "Enerji Kaynakları ve Bilimsel Gelişmeler"
+      ]
+    },
+    {
+      "title" : "AYT GEOMETRİ",
+      "values" : [
+        "Çemberde Açı",
+        "Çemberde Uzunluk",
+        "Dairede Alan",
+        "Nokta Analitiği",
+        "Doğru Analitiği",
+        "Dönüşümler",
+        "Çember Analitiği",
+        "Katı Cisimler"
+      ]
+    },
+    {
+      "title" : "AYT FİZİK",
+      "values" : [
+        "Vektörler",
+        "Bağıl Hareket",
+        "Newton'un Hareket Yasaları",
+        "Bir Boyutta Sabit İvmeli Hareket",
+        "İki Boyutta Hareket",
+        "Enerji",
+        "İtme ve Çizgisel Momentum",
+        "Tork",
+        "Denge",
+        "Kütle ve Ağırlık Merkezi",
+        "Basit Makineler",
+        "Elektrik",
+        "Manyetizma",
+        "Alternatif Akım ve Transformatörler",
+        "Çembersel Hareket",
+        "Basit Harmonik Hareket",
+        "Dalga Mekaniği",
+        "Atom Fiziğine Giriş ve Radyoaktivite",
+        "Modern Fizik",
+        "Modern Fiziğin Teknolojideki Uygulamaları"
+      ]
+    },
+    {
+      "title" : "AYT BİYOLOJİ",
+      "values" : [
+        "Sinir Sistemi",
+        "Hormonlar",
+        "Duyu Organları",
+        "Destek ve Hareket Sistemleri",
+        "Sindirim Sistemi",
+        "Dolaşım Sistemleri ve Bağışıklık",
+        "Solunum Sistemi",
+        "Üriner Sistem",
+        "İnsanda Üreme ve Gelişme",
+        "Komünite ve Popülasyon Ekolojisi",
+        "Genden Proteine ve Biyoteknoloji",
+        "Fotosentez - Kemosentez",
+        "Hücresel Solunum",
+        "Bitkilerin Yapısı",
+        "Bitki Fizyolojisi",
+        "Bitkilerde Üreme ve Gelişme"
+      ]
+    },
+    {
+      "title" : "11. Sınıf Matematik",
+      "values" : [
+        "Trigonometri",
+        "Analitik Geometri",
+        "Fonksiyonlarda Uygulamalar",
+        "Denklem ve Eşitsizlik Sistemleri",
+        "Çember ve Daire",
+        "Uzay Geometri",
+        "Olasılık"
+      ]
+    },
+    {
+      "title" : "11. Sınıf Kimya",
+      "values" : [
+        "Modern Atom Teorisi",
+        "Gazlar",
+        "Sıvı Çözeltiler Ve Çözünürlük",
+        "Kimyasal Tepkimelerde Enerji",
+        "Kimyasal Tepkimelerde Hız",
+        "Kimyasal Tepkimelerde Denge"
+      ]
+    },
+    {
+      "title" : "11. Sınıf Fizik",
+      "values" : [
+        "Vektörler",
+        "Bağıl Hareket",
+        "Newton’in Hareket Yasaları",
+        "Bir Boyutta Sabit İvmeli Hareket",
+        "Yerçekimi Kuvveti Etkisinde Bir Boyutta Hareket",
+        "Yerçekimi Etkisinde İki Boyutta Hareket",
+        "Enerji ve Hareket",
+        "İtme ve Çizgisel Momentum",
+        "Tork, Denge ve Ağırlık Merkezi",
+        "Basit Makineler",
+        "Elektriksel Kuvvet – Elektriksel Alan",
+        "Elektriksel Potansiyel ve Düzgün Elektrik Alan",
+        "Sığa ve Sığaçlar (Kondansatörler)",
+        "Manyetik Alan ve Manyetik Kuvvet",
+        "Elektromanyetik İndüklenme",
+        "Alternatif Akım ve Transformatörler"
+      ]
+    },
+    {
+      "title" : "11. Sınıf Coğrafya",
+      "values" : [
+        "Doğal Sistemler",
+        "Beşeri Sistemler",
+        "Küresel Ortam: Bölgeler ve Ülkeler",
+        "Çevre ve Toplum"
+      ]
+    },
+    {
+      "title" : "11. Sınıf Biyoloji",
+      "values" : [
+        "Sinir Sistemi",
+        "Endokrin Sistem",
+        "Duyu Organları",
+        "Destek ve Hareket Sistemi",
+        "Sindirim Sistemi",
+        "Dolaşım Sistemi",
+        "Bağışıklık Sistemi",
+        "Solunum Sistemi",
+        "Üriner Sistem",
+        "Üreme Sistemi ve Embriyonik Gelişim",
+        "Komünite Ekolojisi",
+        "Popülasyon Ekolojisi"
+      ]
+    }
+  ]

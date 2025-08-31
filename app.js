@@ -2,8 +2,20 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
+const fs = require('fs');
 
 const app = express();
+
+// Dersleri ve konuları JSON dosyasından oku
+let subjectsData = [];
+try {
+    const subjectsPath = path.join(__dirname, 'data', 'subjects.json');
+    const subjectsContent = fs.readFileSync(subjectsPath, 'utf8');
+    subjectsData = JSON.parse(subjectsContent);
+} catch (error) {
+    console.error('Dersler JSON dosyası okunamadı:', error);
+    subjectsData = [];
+}
 
 // Test verileri
 global.testData = {
@@ -50,7 +62,8 @@ global.testData = {
                 subjects: []
             }
         ]
-    }]
+    }],
+    subjects: subjectsData
 };
 
 // View engine ayarı

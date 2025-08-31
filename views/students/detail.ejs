@@ -63,14 +63,11 @@
                 <label class="form-label">Ders</label>
                 <select class="form-select subject-select" id="subjectSelect" required>
                     <option value="">Ders Seçin</option>
-                    <option value="Matematik">Matematik</option>
-                    <option value="Fizik">Fizik</option>
-                    <option value="Kimya">Kimya</option>
-                    <option value="Biyoloji">Biyoloji</option>
-                    <option value="Türkçe">Türkçe</option>
-                    <option value="Geometri">Geometri</option>
-                    <option value="Tarih">Tarih</option>
-                    <option value="Coğrafya">Coğrafya</option>
+                    <% if (global.testData.subjects && global.testData.subjects.length > 0) { %>
+                        <% global.testData.subjects.forEach(function(subject) { %>
+                            <option value="<%= subject.title %>"><%= subject.title %></option>
+                        <% }); %>
+                    <% } %>
                 </select>
             </div>
             <div class="col-md-5">
@@ -134,129 +131,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-// Ders-Konu eşleştirmeleri
-const subjectTopics = {
-    'Matematik': [
-        'Temel Kavramlar',
-        'Sayılar',
-        'Rasyonel Sayılar',
-        'Mutlak Değer',
-        'Üslü Sayılar',
-        'Köklü Sayılar',
-        'Çarpanlara Ayırma',
-        'Oran-Orantı',
-        'Denklemler',
-        'Eşitsizlikler',
-        'Fonksiyonlar',
-        'Polinomlar',
-        'İkinci Dereceden Denklemler',
-        'Karmaşık Sayılar',
-        'Logaritma',
-        'Diziler',
-        'Seriler',
-        'Limit',
-        'Türev',
-        'İntegral'
-    ],
-    'Fizik': [
-        'Fizik Bilimine Giriş',
-        'Madde ve Özellikleri',
-        'Hareket ve Kuvvet',
-        'Enerji',
-        'Isı ve Sıcaklık',
-        'Elektrik ve Manyetizma',
-        'Basınç',
-        'Dalgalar',
-        'Optik',
-        'Atom Fiziği'
-    ],
-    'Kimya': [
-        'Kimya Bilimi',
-        'Atom ve Periyodik Sistem',
-        'Kimyasal Türler Arası Etkileşimler',
-        'Maddenin Halleri',
-        'Karışımlar',
-        'Asitler, Bazlar ve Tuzlar',
-        'Kimya Her Yerde',
-        'Kimyanın Temel Kanunları',
-        'Mol Kavramı',
-        'Kimyasal Tepkimeler'
-    ],
-    'Biyoloji': [
-        'Biyoloji Bilimi',
-        'Canlıların Yapısı',
-        'Hücre',
-        'Canlıların Çeşitliliği',
-        'Üreme',
-        'Kalıtım',
-        'Ekosistem',
-        'Güncel Çevre Sorunları',
-        'Canlılar ve Enerji',
-        'İnsan Fizyolojisi'
-    ],
-    'Türkçe': [
-        'Sözcükte Anlam',
-        'Cümlede Anlam',
-        'Paragrafta Anlam',
-        'Anlatım Teknikleri',
-        'Düşünceyi Geliştirme Yolları',
-        'Sözcük Türleri',
-        'Fiilimsiler',
-        'Cümlenin Ögeleri',
-        'Cümle Türleri',
-        'Anlatım Bozuklukları',
-        'Ses Bilgisi',
-        'Yazım Kuralları',
-        'Noktalama İşaretleri'
-    ],
-    'Geometri': [
-        'Temel Kavramlar',
-        'Doğruda Açılar',
-        'Üçgende Açılar',
-        'Üçgende Açı-Kenar Bağıntıları',
-        'Üçgende Alan',
-        'Üçgende Benzerlik',
-        'Dik Üçgen',
-        'İkizkenar Üçgen',
-        'Eşkenar Üçgen',
-        'Dörtgenler',
-        'Çokgenler',
-        'Çemberde Açılar',
-        'Çemberde Uzunluk',
-        'Dairede Alan',
-        'Katı Cisimler'
-    ],
-    'Tarih': [
-        'Tarih Bilimi',
-        'İlk Uygarlıklar',
-        'İlk Türk Devletleri',
-        'İslam Tarihi ve Uygarlığı',
-        'Türk-İslam Devletleri',
-        'Osmanlı Devleti Kuruluş Dönemi',
-        'Osmanlı Devleti Yükselme Dönemi',
-        'Osmanlı Devleti Duraklama Dönemi',
-        'Osmanlı Devleti Gerileme Dönemi',
-        'Osmanlı Devleti Dağılma Dönemi',
-        'Kurtuluş Savaşı',
-        'Atatürk Dönemi',
-        'Çağdaş Türk ve Dünya Tarihi'
-    ],
-    'Coğrafya': [
-        'Doğa ve İnsan',
-        'Dünya\'nın Şekli ve Hareketleri',
-        'Coğrafi Konum',
-        'Harita Bilgisi',
-        'İklim Bilgisi',
-        'Yerşekilleri',
-        'Nüfus ve Yerleşme',
-        'Türkiye\'nin Fiziki Özellikleri',
-        'Türkiye\'nin İklimi',
-        'Türkiye\'nin Nüfusu',
-        'Türkiye\'nin Ekonomik Coğrafyası',
-        'Bölgeler ve Ülkeler',
-        'Çevre ve Toplum'
-    ]
-};
+// Ders-Konu eşleştirmeleri - JSON'dan gelen verilerle oluştur
+const subjectsData = <%- JSON.stringify(global.testData.subjects || []) %>;
+const subjectTopics = {};
+if (subjectsData && subjectsData.length > 0) {
+    subjectsData.forEach(subject => {
+        subjectTopics[subject.title] = subject.values;
+    });
+}
+
+// Ders listesi - JSON'dan gelen verilerle oluştur
+const subjectsList = subjectsData && subjectsData.length > 0 ? subjectsData.map(subject => subject.title) : [];
 
 // Ders seçildiğinde konuları güncelle
 document.getElementById('subjectSelect').addEventListener('change', function() {
@@ -486,14 +371,7 @@ function addSubject() {
         <div class="col-md-5">
             <select class="form-select subject-select" name="subjects[${newIndex}][subject]" onchange="updateTopics(this)">
                 <option value="">Ders Seçin</option>
-                <option value="Matematik">Matematik</option>
-                <option value="Fizik">Fizik</option>
-                <option value="Kimya">Kimya</option>
-                <option value="Biyoloji">Biyoloji</option>
-                <option value="Türkçe">Türkçe</option>
-                <option value="Geometri">Geometri</option>
-                <option value="Tarih">Tarih</option>
-                <option value="Coğrafya">Coğrafya</option>
+                ${subjectsList.map(subject => `<option value="${subject}">${subject}</option>`).join('')}
             </select>
         </div>
         <div class="col-md-5">
