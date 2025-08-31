@@ -27,7 +27,7 @@ global.sections = [...global.schoolDays, 'Notlar'];
 global.testData = {
     coaches: [{
         id: '1',
-        username: 'admin',
+        username: 'furkan',
         password: '123', // Gerçek uygulamada hash'lenmiş olmalı
         name: 'Test Koç',
         email: 'test@example.com'
@@ -53,6 +53,7 @@ app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
 // Middleware
+app.set('trust proxy', 1); // Railway ve benzeri platformlar için
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -61,13 +62,11 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Vercel'de HTTPS kullanıldığı için
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 1 gün
+        maxAge: 24 * 60 * 60 * 1000,
         sameSite: 'lax'
-    },
-    resave: false,
-    saveUninitialized: false
+    }
 }));
 
 // Routes
@@ -98,7 +97,4 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server ${PORT} portunda çalışıyor`);
-    console.log('\nTest kullanıcısı bilgileri:');
-    console.log('Kullanıcı adı:', testData.coaches[0].username);
-    console.log('Şifre:', testData.coaches[0].password);
 }); 

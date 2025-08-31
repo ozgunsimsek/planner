@@ -21,13 +21,9 @@ async function createTestUser() {
         // Önce varsa mevcut kullanıcıyı sil
         await Coach.deleteOne({ username: testCoach.username });
         
-        // Yeni kullanıcı oluştur
+        // Yeni kullanıcı oluştur.
         const coach = new Coach(testCoach);
         await coach.save();
-        
-        console.log('Test kullanıcısı başarıyla oluşturuldu:');
-        console.log('Kullanıcı adı:', testCoach.username);
-        console.log('Şifre:', testCoach.password);
         
         mongoose.connection.close();
     } catch (error) {
