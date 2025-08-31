@@ -10,7 +10,11 @@ function generateId() {
 // Öğrenci listesi
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        const students = global.testData.students.filter(s => s.coach === req.session.userId);
+        // Session'da students yoksa global'den al
+        if (!req.session.students) {
+            req.session.students = global.testData.students;
+        }
+        const students = req.session.students.filter(s => s.coach === req.session.userId);
         res.render('students/list', { students });
     } catch (error) {
         res.render('students/list', { error: 'Öğrenciler listelenirken bir hata oluştu' });
@@ -40,7 +44,10 @@ router.post('/', isAuthenticated, async (req, res) => {
             }))
         };
         
-        global.testData.students.push(newStudent);
+        if (!req.session.students) {
+            req.session.students = global.testData.students;
+        }
+        req.session.students.push(newStudent);
         res.redirect('/students');
     } catch (error) {
         res.render('students/new', { 

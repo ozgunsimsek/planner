@@ -59,6 +59,14 @@ app.use(express.json());
 app.use(session({
     secret: 'gizli-anahtar',
     resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Vercel'de HTTPS kullanıldığı için
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 1 gün
+        sameSite: 'lax'
+    },
+    resave: false,
     saveUninitialized: false
 }));
 
