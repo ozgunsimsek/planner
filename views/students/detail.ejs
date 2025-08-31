@@ -116,6 +116,11 @@
                                    onchange="autoSave()">
                         </div>
                         <button type="button" 
+                                onclick="duplicateSubject(this)"
+                                class="btn btn-outline-primary me-2">
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                        <button type="button" 
                                 onclick="removeSubject(this)"
                                 class="btn btn-outline-danger">
                             <i class="bi bi-trash"></i>
@@ -193,6 +198,11 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
                    onchange="autoSave()">
         </div>
         <button type="button" 
+                onclick="duplicateSubject(this)"
+                class="btn btn-outline-primary me-2">
+            <i class="bi bi-plus-circle"></i>
+        </button>
+        <button type="button" 
                 onclick="removeSubject(this)"
                 class="btn btn-outline-danger">
             <i class="bi bi-trash"></i>
@@ -222,6 +232,55 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
     // Otomatik kaydet
     await autoSave();
 });
+
+// Ders çoğaltma
+async function duplicateSubject(button) {
+    const row = button.closest('.subject-row');
+    const inputs = row.getElementsByTagName('input');
+    const subject = inputs[0].value.trim();
+    const notes = inputs[1].value.trim();
+    
+    if (!subject) return; // Ders adı yoksa çoğaltma
+    
+    const container = document.getElementById('subjectsContainer');
+    const subjectCount = container.children.length;
+    
+    const newSubjectRow = document.createElement('div');
+    newSubjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3';
+    newSubjectRow.innerHTML = `
+        <div class="flex-grow-1">
+            <input type="text" 
+                   name="subjects[${subjectCount}][subject]" 
+                   value="${subject}"
+                   class="form-control"
+                   placeholder="Ders adı"
+                   onchange="autoSave()">
+        </div>
+        <div class="flex-grow-1">
+            <input type="text" 
+                   name="subjects[${subjectCount}][notes]" 
+                   value="${notes}"
+                   class="form-control"
+                   placeholder="Notlar"
+                   onchange="autoSave()">
+        </div>
+        <button type="button" 
+                onclick="duplicateSubject(this)"
+                class="btn btn-outline-primary me-2">
+            <i class="bi bi-plus-circle"></i>
+        </button>
+        <button type="button" 
+                onclick="removeSubject(this)"
+                class="btn btn-outline-danger">
+            <i class="bi bi-trash"></i>
+        </button>
+    `;
+    
+    container.appendChild(newSubjectRow);
+    
+    // Otomatik kaydet
+    await autoSave();
+}
 
 // Ders silme
 async function removeSubject(button) {
