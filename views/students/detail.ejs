@@ -224,7 +224,7 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
 });
 
 // Ders silme
-function removeSubject(button) {
+async function removeSubject(button) {
     const row = button.closest('.subject-row');
     row.remove();
     
@@ -250,7 +250,7 @@ function removeSubject(button) {
     });
 
     // Otomatik kaydet
-    autoSave();
+    await autoSave();
 }
 
 async function autoSave() {
@@ -436,23 +436,5 @@ function updateTopics(select) {
     initSelect2($topicSelect);
 }
 
-// Ders satırını silerken Select2'yi temizle
-function removeSubject(button) {
-    const row = button.closest('.subject-row');
-    $(row).find('.subject-select, .topic-select').select2('destroy');
-    row.remove();
-    updateIndices();
-}
 
-// İndeksleri güncellerken Select2'yi güncelle
-function updateIndices() {
-    const rows = document.querySelectorAll('.subject-row');
-    rows.forEach((row, index) => {
-        const subjectSelect = row.querySelector('.subject-select');
-        const topicSelect = row.querySelector('.topic-select');
-        
-        subjectSelect.name = `subjects[${index}][subject]`;
-        topicSelect.name = `subjects[${index}][topic]`;
-    });
-}
 </script> 
