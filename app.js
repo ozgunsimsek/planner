@@ -32,17 +32,30 @@ global.testData = {
         name: 'Test Koç',
         email: 'test@example.com'
     }],
-    students: [{
-        id: 'test123',
-        name: 'Furkan Şişli',
-        grade: '11',
-        email: 'furkan@example.com',
-        coach: '1',
-        weeklySchedule: global.schoolDays.map(day => ({
-            day: day,
-            subjects: []
-        }))
-    }],
+    students: [
+        {
+            id: 'test123',
+            name: 'Furkan Şişli',
+            grade: '11',
+            email: 'furkan@example.com',
+            coach: '1',
+            weeklySchedule: global.schoolDays.map(day => ({
+                day: day,
+                subjects: []
+            }))
+        },
+        {
+            id: 'test456',
+            name: 'Damla ŞİŞLİ',
+            grade: '12',
+            email: 'damla@example.com',
+            coach: '1',
+            weeklySchedule: global.schoolDays.map(day => ({
+                day: day,
+                subjects: []
+            }))
+        }
+    ],
     subjects: subjectsData
 };
 

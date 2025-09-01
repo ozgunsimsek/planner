@@ -10,9 +10,10 @@ function generateId() {
 // Öğrenci listesi
 router.get('/', isAuthenticated, async (req, res) => {
     try {
-        // Session'da students yoksa global'den al
+        // Her kullanıcı için ayrı öğrenci listesi oluştur
         if (!req.session.students) {
-            req.session.students = global.testData.students;
+            // Öğrenci verilerinin derin bir kopyasını oluştur
+            req.session.students = JSON.parse(JSON.stringify(global.testData.students));
         }
         const students = req.session.students.filter(s => s.coach === req.session.userId);
         res.render('students/list', { students });
