@@ -129,7 +129,10 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
         
         // Her dersi sırayla günlere dağıt
         filteredSubjects.forEach((subject, index) => {
-            const dayIndex = index % global.schoolDays.length; // 0-6 arası döngüsel indeks
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Pazar, 1 = Pazartesi, ... 6 = Cumartesi
+            const dateDiff = dayOfWeek - 1; // Bugün hangi günse o günden başlayarak dağıt
+            const dayIndex = (index + dateDiff) % global.schoolDays.length; // 0-6 arası döngüsel indeks
             weeklySchedule[dayIndex].subjects.push(subject);
         });
 
