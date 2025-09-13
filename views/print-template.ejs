@@ -7,7 +7,7 @@
     <style>
         @page {
             size: A4;
-            margin: 1.5cm;
+            margin: 1cm;
         }
         
         body {
@@ -240,6 +240,8 @@
         @media print {
             body {
                 padding: 0;
+                margin: 0;
+                font-size: 12px;
             }
             
             .no-print {
@@ -248,22 +250,32 @@
 
             .week-grid {
                 page-break-inside: avoid;
+                break-inside: avoid;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+                margin-bottom: 10px;
             }
 
             .day-box, .notes-box {
                 box-shadow: none;
                 border: 1px solid #000;
-                height: 240px !important;
+                height: 220px !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                padding: 8px;
             }
 
             .subject-line {
-                font-size: 10px !important;
-                margin-bottom: 4px !important;
-                padding: 2px !important;
+                font-size: 9px !important;
+                margin-bottom: 3px !important;
+                padding: 1px !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
             }
 
             .subject-text {
-                min-height: 12px !important;
+                min-height: 10px !important;
                 padding-bottom: 1px !important;
                 color: #000 !important;
                 font-weight: normal !important;
@@ -271,15 +283,18 @@
 
             .day-title, .notes-title, .paragraph-title {
                 color: #000 !important;
+                font-size: 11px !important;
             }
 
             .day-title {
-                padding-bottom: 4px !important;
-                margin-bottom: 8px !important;
+                padding-bottom: 3px !important;
+                margin-bottom: 6px !important;
             }
 
             .subject-dot {
                 margin-right: 0 !important;
+                width: 3px !important;
+                height: 3px !important;
             }
 
             .subject-dot {
@@ -288,6 +303,7 @@
 
             .title {
                 color: #000 !important;
+                font-size: 14px !important;
             }
 
             /* PDF'de logo alanı için özel stiller */
@@ -303,11 +319,18 @@
             }
 
             /* PDF'de notlar alanı için özel stiller */
+            .day-box[data-day="Notlar"] {
+                height: 220px !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
             .day-box[data-day="Notlar"] .notes-area {
                 border: none !important;
                 padding: 0 !important;
                 margin-top: 0 !important;
                 box-shadow: none !important;
+                height: 170px !important;
             }
 
             .day-box[data-day="Notlar"] .notes-area textarea {
@@ -315,8 +338,28 @@
                 padding: 0 !important;
                 margin: 0 !important;
                 background: transparent !important;
-                font-size: 11px !important;
-                line-height: 1.3 !important;
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+                height: 160px !important;
+            }
+
+            /* iOS için özel düzenlemeler */
+            @supports (-webkit-touch-callout: none) {
+                .day-box, .notes-box {
+                    height: 180px !important;
+                }
+                
+                .day-box[data-day="Notlar"] {
+                    height: 180px !important;
+                }
+                
+                .day-box[data-day="Notlar"] .notes-area {
+                    height: 130px !important;
+                }
+                
+                .day-box[data-day="Notlar"] .notes-area textarea {
+                    height: 120px !important;
+                }
             }
         }
 
