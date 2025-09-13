@@ -78,16 +78,76 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
             subject.subject && subject.subject.trim() !== ''
         );
 
-        // Dersleri günlere sırayla dağıt (sadece ders günleri)
+        // Dersleri günlere akıllı dağıt (grup bazlı)
         const weeklySchedule = global.schoolDays.map(day => ({ day, subjects: [] }));
         
-        // Her dersi sırayla günlere dağıt
-        filteredSubjects.forEach((subject, index) => {
-            const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 = Pazar, 1 = Pazartesi, ... 6 = Cumartesi
-            const dateDiff = dayOfWeek; // Bugün hangi günse o günden başlayarak dağıt
-            const dayIndex = (index + dateDiff) % global.schoolDays.length; // 0-6 arası döngüsel indeks
-            weeklySchedule[dayIndex].subjects.push(subject);
+        // 1. Dersleri ders+konu bazında grupla
+        const subjectGroups = {};
+        filteredSubjects.forEach(subject => {
+            const groupKey = `${subject.subject}|${subject.notes || ''}`;
+            if (!subjectGroups[groupKey]) {
+                subjectGroups[groupKey] = [];
+            }
+            subjectGroups[groupKey].push(subject);
+        });
+        
+        // 2. Grupları boyutlarına göre sırala (büyükten küçüğe)
+        const sortedGroups = Object.values(subjectGroups).sort((a, b) => b.length - a.length);
+        
+        // 3. Bugünün gününü hesapla
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 = Pazar, 1 = Pazartesi, ... 6 = Cumartesi
+        
+        // global.schoolDays: ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
+        // getDay(): 0=Pazar, 1=Pazartesi, ..., 6=Cumartesi
+        // Dönüşüm: Pazar=6, Pazartesi=0, Salı=1, ..., Cumartesi=5
+        const todayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        
+        // 4. Her grubu en uygun güne yerleştir
+        sortedGroups.forEach(group => {
+            const groupSize = group.length;
+            
+            // Geçerli başlangıç günlerini belirle (döngüsel)
+            const validStartDays = [];
+            for (let i = 0; i < 7; i++) {
+                const dayIndex = (todayIndex + i) % global.schoolDays.length;
+                if (i <= 7 - groupSize) {
+                    validStartDays.push(dayIndex);
+                }
+            }
+            
+            // En boş günü bul (eşitlik durumunda bugüne en yakın)
+            let bestStartDay = validStartDays[0];
+            let minSubjects = weeklySchedule[bestStartDay].subjects.length;
+            
+            // Döngüsel mesafe hesaplama fonksiyonu
+            const getCircularDistance = (day1, day2, totalDays) => {
+                const diff = day1 - day2;
+                return diff >= 0 ? diff : totalDays + diff;
+            };
+            
+            let minDistance = getCircularDistance(bestStartDay, todayIndex, global.schoolDays.length);
+            
+            validStartDays.forEach(dayIndex => {
+                const currentSubjects = weeklySchedule[dayIndex].subjects.length;
+                const currentDistance = getCircularDistance(dayIndex, todayIndex, global.schoolDays.length);
+                
+                // Önce ders sayısına bak, sonra mesafeye bak
+                if (currentSubjects < minSubjects) {
+                    minSubjects = currentSubjects;
+                    bestStartDay = dayIndex;
+                    minDistance = currentDistance;
+                } else if (currentSubjects === minSubjects && currentDistance < minDistance) {
+                    bestStartDay = dayIndex;
+                    minDistance = currentDistance;
+                }
+            });
+            
+            // Grubu en uygun günden başlayarak yerleştir
+            for (let i = 0; i < groupSize; i++) {
+                const targetDayIndex = (bestStartDay + i) % global.schoolDays.length;
+                weeklySchedule[targetDayIndex].subjects.push(group[i]);
+            }
         });
 
         // Session'daki haftalık programı güncelle
