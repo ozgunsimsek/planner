@@ -99,9 +99,10 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
         // 2. Grupları boyutlarına göre sırala (büyükten küçüğe)
         const sortedGroups = Object.values(subjectGroups).sort((a, b) => b.length - a.length);
         
-        // 3. Bugünün gününü hesapla
+        // 3. Bugünün gününü hesapla (Türkiye saatine göre)
         const today = new Date();
-        const dayOfWeek = today.getDay(); // 0 = Pazar, 1 = Pazartesi, ... 6 = Cumartesi
+        const turkeyTime = new Date(today.toLocaleString("en-US", {timeZone: "Europe/Istanbul"}));
+        const dayOfWeek = turkeyTime.getDay(); // 0 = Pazar, 1 = Pazartesi, ... 6 = Cumartesi
         
         // global.schoolDays: ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
         // getDay(): 0=Pazar, 1=Pazartesi, ..., 6=Cumartesi
