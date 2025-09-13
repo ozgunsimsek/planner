@@ -579,7 +579,7 @@
                         <% }) %>
                         <% 
                         // Ders sayısından sonra kalan boş satırları ekle
-                        const remainingEmptyLines = 5 - subjects.length;
+                        const remainingEmptyLines = 7 - subjects.length;
                         for(let i = 0; i < remainingEmptyLines; i++) { 
                         %>
                             <div class="subject-line">
@@ -588,6 +588,14 @@
                             </div>
                         <% } %>
                     <% } else { %>
+                        <div class="subject-line">
+                            <div class="subject-dot"></div>
+                            <div class="subject-text"></div>
+                        </div>
+                        <div class="subject-line">
+                            <div class="subject-dot"></div>
+                            <div class="subject-text"></div>
+                        </div>
                         <div class="subject-line">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
@@ -674,14 +682,14 @@
                 // Yeni dersi ekle
                 targetDay.appendChild(newSubjectLine);
                 
-                // HEDEF GÜN: Her zaman 5 satır olmasını sağla (dolu + boş)
+                // HEDEF GÜN: Her zaman 7 satır olmasını sağla (dolu + boş)
                 const targetFilledLines = targetDay.querySelectorAll('.subject-line[data-subject]');
                 
                 // Önce tüm boş satırları kaldır
                 targetDay.querySelectorAll('.subject-line:not([data-subject])').forEach(line => line.remove());
                 
                 // Sonra gerekli sayıda boş satır ekle
-                const targetNeededEmptyLines = 5 - targetFilledLines.length;
+                const targetNeededEmptyLines = 7 - targetFilledLines.length;
                 for (let i = 0; i < targetNeededEmptyLines; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'subject-line';
@@ -692,14 +700,14 @@
                     targetDay.appendChild(emptyLine);
                 }
 
-                // KAYNAK GÜN: Her zaman 5 satır olmasını sağla (dolu + boş)
+                // KAYNAK GÜN: Her zaman 7 satır olmasını sağla (dolu + boş)
                 const sourceFilledLines = sourceDay.querySelectorAll('.subject-line[data-subject]');
                 
                 // Önce tüm boş satırları kaldır
                 sourceDay.querySelectorAll('.subject-line:not([data-subject])').forEach(line => line.remove());
                 
                 // Sonra gerekli sayıda boş satır ekle
-                const sourceNeededEmptyLines = 5 - sourceFilledLines.length;
+                const sourceNeededEmptyLines = 7 - sourceFilledLines.length;
                 for (let i = 0; i < sourceNeededEmptyLines; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'subject-line';
@@ -850,8 +858,8 @@
                 // Boş satırları kaldır
                 dayBox.querySelectorAll('.subject-line:not([data-subject])').forEach(line => line.remove());
                 
-                // Gerekli sayıda boş satır ekle (maksimum 5 satır)
-                const neededEmptyLines = Math.max(0, 5 - filledLines.length);
+                // Gerekli sayıda boş satır ekle (maksimum 7 satır)
+                const neededEmptyLines = Math.max(0, 7 - filledLines.length);
                 for (let i = 0; i < neededEmptyLines; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'subject-line';
