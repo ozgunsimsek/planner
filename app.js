@@ -32,30 +32,6 @@ global.testData = {
         name: 'Test Koç',
         email: 'test@example.com'
     }],
-    students: [
-        {
-            id: 'test123',
-            name: 'Furkan Şişli',
-            grade: '11',
-            email: 'furkan@example.com',
-            coach: '1',
-            weeklySchedule: global.schoolDays.map(day => ({
-                day: day,
-                subjects: []
-            }))
-        },
-        {
-            id: 'test456',
-            name: 'Damla ŞİŞLİ',
-            grade: '12',
-            email: 'damla@example.com',
-            coach: '1',
-            weeklySchedule: global.schoolDays.map(day => ({
-                day: day,
-                subjects: []
-            }))
-        }
-    ],
     subjects: subjectsData
 };
 
@@ -89,21 +65,14 @@ const studentRoutes = require('./routes/students');
 app.use('/auth', authRoutes.router);
 app.use('/students', studentRoutes);
 
-// Yazdırma şablonu route'u
-app.get('/print-template/:studentId', (req, res) => {
-    const student = global.testData.students.find(s => s.id === req.params.studentId);
-    if (!student) {
-        return res.redirect('/students');
-    }
-    res.render('print-template', { layout: false, student });
-});
 
-// Ana sayfa
+// Ana sayfa - direkt öğrenci detay sayfasına yönlendir
 app.get('/', (req, res) => {
     if (!req.session.userId) {
         return res.redirect('/auth/login');
     }
-    res.render('index');
+    // Her koç için sabit öğrenci ID'si kullan
+    return res.redirect(`/students/student1`);
 });
 
 // Server başlatma

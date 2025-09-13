@@ -1,19 +1,6 @@
 const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    grade: {
-        type: String,
-        required: true
-    },
     weeklySchedule: [{
         day: {
             type: String,
@@ -25,7 +12,7 @@ const studentSchema = new mongoose.Schema({
             notes: String
         }]
     }],
-    generalNotes: {
+    weeklyRoutine: {
         type: String,
         default: ''
     },
@@ -36,4 +23,4 @@ const studentSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Student', studentSchema); 
+module.exports = mongoose.model('Student', studentSchema);
