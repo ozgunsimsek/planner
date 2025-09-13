@@ -13,6 +13,35 @@
         .select2-container--bootstrap-5 .select2-selection--single {
             padding: 0.375rem 0.75rem;
         }
+
+        /* Grup ayırımı - input alanlarına background */
+        .subject-row.group-white input {
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+        }
+
+        .subject-row.group-gray input {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+        }
+
+        .subject-row.group-white input:focus {
+            background-color: #ffffff;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .subject-row.group-gray input:focus {
+            background-color: #e3f2fd;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .subject-number {
+            min-width: 35px;
+            display: flex;
+            justify-content: center;
+        }
     </style>
 </head>
 
@@ -171,13 +200,20 @@ function updateSubjectNumbers() {
         subjectGroups[groupKey].push({ row, index });
     });
     
-    // Her ders + konu grubu için numaralandırma yap
-    Object.keys(subjectGroups).forEach(groupKey => {
-        subjectGroups[groupKey].forEach((item, groupIndex) => {
+    // Her ders + konu grubu için numaralandırma ve renklendirme yap
+    const groupKeys = Object.keys(subjectGroups);
+    groupKeys.forEach((groupKey, groupIndex) => {
+        const isWhiteGroup = groupIndex % 2 === 0; // Çift indeksler beyaz, tek indeksler gri
+        
+        subjectGroups[groupKey].forEach((item, itemIndex) => {
             const badge = item.row.querySelector('.subject-number .badge');
             if (badge) {
-                badge.textContent = groupIndex + 1;
+                badge.textContent = itemIndex + 1;
             }
+            
+            // Grup rengini ayarla
+            item.row.className = item.row.className.replace(/group-\w+/g, ''); // Eski grup sınıflarını temizle
+            item.row.classList.add(isWhiteGroup ? 'group-white' : 'group-gray');
         });
     });
 }
@@ -229,7 +265,7 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
     const subjectCount = container.children.length;
     
     const subjectRow = document.createElement('div');
-    subjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3';
+    subjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3 group-white';
     subjectRow.innerHTML = `
         <div class="subject-number">
             <span class="badge bg-primary">${subjectCount + 1}</span>
@@ -333,7 +369,7 @@ async function duplicateSubject(button) {
     
     // Yeni satır oluştur
     const newSubjectRow = document.createElement('div');
-    newSubjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3';
+    newSubjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3 group-white';
     newSubjectRow.innerHTML = `
         <div class="subject-number">
             <span class="badge bg-primary">1</span>
@@ -470,6 +506,9 @@ $(document).ready(function() {
     $('.subject-select, .topic-select').each(function() {
         initSelect2($(this));
     });
+
+    // Sayfa yüklendiğinde grup renklerini uygula
+    updateSubjectNumbers();
 
     // Ders seçildiğinde konuları güncelle
     $('#subjectSelect').on('select2:select', function(e) {
