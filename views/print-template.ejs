@@ -571,6 +571,15 @@
         .btn-secondary-modal:hover {
             background-color: #e9ecef;
         }
+
+        .btn-danger-modal {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger-modal:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -582,7 +591,7 @@
     <div id="addSubjectModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Ders Ekle</div>
+                <div class="modal-title" id="modalTitle">Ders Ekle</div>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <form id="addSubjectForm">
@@ -596,7 +605,8 @@
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-modal btn-secondary-modal" onclick="closeModal()">İptal</button>
-                    <button type="submit" class="btn-modal btn-primary-modal">Ekle</button>
+                    <button type="button" id="deleteButton" class="btn-modal btn-danger-modal" onclick="deleteSubject()" style="display: none;">Sil</button>
+                    <button type="submit" class="btn-modal btn-primary-modal" id="submitButton">Ekle</button>
                 </div>
             </form>
         </div>
@@ -611,7 +621,7 @@
 
     <div class="week-grid">
         <% global.sections.forEach(day => { %>
-            <div class="day-box" data-day="<%= day %>" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" onclick="openAddSubjectModal('<%= day %>')">
+            <div class="day-box" data-day="<%= day %>" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                 <div class="day-title">
                     <span><%= day %></span>
                     <% if (student.weeklyRoutine && day !== 'Notlar') { %>
@@ -635,6 +645,7 @@
                             <div class="subject-line" 
                                  draggable="true" 
                                  ondragstart="drag(event)" 
+                                 onclick="editSubject('<%= day %>', '<%= index %>', '<%= subject.subject %>', '<%= subject.notes || '' %>')"
                                  data-subject="<%= subject.subject %>"
                                  data-notes="<%= subject.notes || '' %>"
                                  data-day="<%= day %>"
@@ -648,37 +659,37 @@
                         const remainingEmptyLines = 7 - subjects.length;
                         for(let i = 0; i < remainingEmptyLines; i++) { 
                         %>
-                            <div class="subject-line">
+                            <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                                 <div class="subject-dot"></div>
                                 <div class="subject-text"></div>
                             </div>
                         <% } %>
                     <% } else { %>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
-                        <div class="subject-line">
+                        <div class="subject-line" onclick="openAddSubjectModal('<%= day %>')">
                             <div class="subject-dot"></div>
                             <div class="subject-text"></div>
                         </div>
@@ -691,6 +702,7 @@
     <script>
         let draggedItem = null;
         let selectedDay = null;
+        let selectedIndex = null;
 
         function drag(event) {
             draggedItem = event.target;
@@ -745,6 +757,11 @@
                     <div class="subject-text">${displayText}</div>
                 `;
 
+                // Onclick fonksiyonunu ekle
+                newSubjectLine.onclick = function() { 
+                    editSubject(targetDay.dataset.day, targetFilledLines.length, subject, notes); 
+                };
+
                 // Yeni dersi ekle
                 targetDay.appendChild(newSubjectLine);
                 
@@ -759,6 +776,7 @@
                 for (let i = 0; i < targetNeededEmptyLines; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'subject-line';
+                    emptyLine.onclick = function() { openAddSubjectModal(targetDay.dataset.day); };
                     emptyLine.innerHTML = `
                         <div class="subject-dot"></div>
                         <div class="subject-text"></div>
@@ -777,6 +795,7 @@
                 for (let i = 0; i < sourceNeededEmptyLines; i++) {
                     const emptyLine = document.createElement('div');
                     emptyLine.className = 'subject-line';
+                    emptyLine.onclick = function() { openAddSubjectModal(sourceDay.dataset.day); };
                     emptyLine.innerHTML = `
                         <div class="subject-dot"></div>
                         <div class="subject-text"></div>
@@ -787,6 +806,9 @@
 
             draggedItem.classList.remove('dragging');
             draggedItem = null;
+            
+            // Tüm derslerin onclick fonksiyonlarını güncelle
+            updateAllSubjectOnclicks();
             
             // Değişiklikleri kaydet
             saveSchedule();
@@ -846,14 +868,106 @@
             if (day === 'Notlar') return;
             
             selectedDay = day;
+            selectedIndex = null; // Yeni ders ekleme modu
+            
+            // Modal başlığını ve butonları ayarla
+            document.getElementById('modalTitle').textContent = 'Ders Ekle';
+            document.getElementById('submitButton').textContent = 'Ekle';
+            document.getElementById('deleteButton').style.display = 'none';
+            
             document.getElementById('addSubjectModal').style.display = 'block';
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectNotes').value = '';
             document.getElementById('subjectName').focus();
+        }
+
+        function editSubject(day, index, subject, notes) {
+            // Sürükle-bırak işlemi devam ediyorsa modal açma
+            if (draggedItem) return;
+            
+            selectedDay = day;
+            selectedIndex = index; // Düzenleme modu
+            
+            // Modal başlığını ve butonları ayarla
+            document.getElementById('modalTitle').textContent = 'Ders Düzenle';
+            document.getElementById('submitButton').textContent = 'Düzenle';
+            document.getElementById('deleteButton').style.display = 'inline-block';
+            
+            document.getElementById('addSubjectModal').style.display = 'block';
+            document.getElementById('subjectName').value = subject;
+            document.getElementById('subjectNotes').value = notes;
+            document.getElementById('subjectName').focus();
+        }
+
+        function deleteSubject() {
+            if (selectedIndex === null) return;
+            
+            const dayBox = document.querySelector(`[data-day="${selectedDay}"]`);
+            if (dayBox) {
+                const subjectToDelete = dayBox.querySelector(`.subject-line[data-index="${selectedIndex}"]`);
+                if (subjectToDelete) {
+                    subjectToDelete.remove();
+                    
+                    // Kalan derslerin index'lerini güncelle
+                    const remainingSubjects = dayBox.querySelectorAll('.subject-line[data-subject]');
+                    remainingSubjects.forEach((subject, newIndex) => {
+                        subject.dataset.index = newIndex;
+                        subject.onclick = function() { 
+                            editSubject(selectedDay, newIndex, subject.dataset.subject, subject.dataset.notes); 
+                        };
+                    });
+                    
+                    // Boş satırları yeniden düzenle
+                    const filledLines = dayBox.querySelectorAll('.subject-line[data-subject]');
+                    const neededEmptyLines = Math.max(0, 7 - filledLines.length);
+                    
+                    // Mevcut boş satırları kaldır
+                    dayBox.querySelectorAll('.subject-line:not([data-subject])').forEach(line => line.remove());
+                    
+                    // Gerekli sayıda boş satır ekle
+                    for (let i = 0; i < neededEmptyLines; i++) {
+                        const emptyLine = document.createElement('div');
+                        emptyLine.className = 'subject-line';
+                        emptyLine.onclick = function() { openAddSubjectModal(dayBox.dataset.day); };
+                        emptyLine.innerHTML = `
+                            <div class="subject-dot"></div>
+                            <div class="subject-text"></div>
+                        `;
+                        dayBox.appendChild(emptyLine);
+                    }
+                    
+                    // Tüm derslerin onclick fonksiyonlarını güncelle
+                    updateAllSubjectOnclicks();
+                    
+                    // Değişiklikleri kaydet
+                    saveSchedule();
+                }
+            }
+            
+            closeModal();
+        }
+
+        function updateAllSubjectOnclicks() {
+            // Tüm günlerdeki derslerin onclick fonksiyonlarını güncelle
+            const allDayBoxes = document.querySelectorAll('.day-box');
+            allDayBoxes.forEach(dayBox => {
+                const day = dayBox.dataset.day;
+                const subjects = dayBox.querySelectorAll('.subject-line[data-subject]');
+                
+                subjects.forEach((subject, index) => {
+                    subject.dataset.index = index;
+                    subject.onclick = function() { 
+                        editSubject(day, index, this.dataset.subject, this.dataset.notes); 
+                    };
+                });
+            });
         }
 
         function closeModal() {
             document.getElementById('addSubjectModal').style.display = 'none';
             document.getElementById('addSubjectForm').reset();
             selectedDay = null;
+            selectedIndex = null;
         }
 
         // Modal dışına tıklandığında kapat
@@ -887,54 +1001,89 @@
             // Seçili güne ders ekle
             const dayBox = document.querySelector(`[data-day="${selectedDay}"]`);
             if (dayBox) {
-                // Mevcut ders satırlarını say
-                const existingSubjects = dayBox.querySelectorAll('.subject-line[data-subject]');
-                
-                // Yeni ders satırı oluştur
-                const newSubjectLine = document.createElement('div');
-                newSubjectLine.className = 'subject-line';
-                newSubjectLine.draggable = true;
-                newSubjectLine.ondragstart = drag;
-                newSubjectLine.dataset.subject = subjectName;
-                newSubjectLine.dataset.notes = subjectNotes;
-                newSubjectLine.dataset.day = selectedDay;
-                
-                // Görüntüleme metnini oluştur
-                let displayText = '';
-                if (subjectName && subjectNotes) {
-                    displayText = `<strong>${subjectName}</strong> - ${subjectNotes}`;
-                } else if (subjectName) {
-                    displayText = `<strong>${subjectName}</strong>`;
-                } else if (subjectNotes) {
-                    displayText = subjectNotes;
-                }
-                
-                newSubjectLine.innerHTML = `
-                    <div class="subject-dot"></div>
-                    <div class="subject-text">${displayText}</div>
-                `;
-                
-                // Ders satırını ekle
-                dayBox.appendChild(newSubjectLine);
-                
-                // Boş satırları yeniden düzenle
-                const allLines = dayBox.querySelectorAll('.subject-line');
-                const filledLines = dayBox.querySelectorAll('.subject-line[data-subject]');
-                
-                // Boş satırları kaldır
-                dayBox.querySelectorAll('.subject-line:not([data-subject])').forEach(line => line.remove());
-                
-                // Gerekli sayıda boş satır ekle (maksimum 7 satır)
-                const neededEmptyLines = Math.max(0, 7 - filledLines.length);
-                for (let i = 0; i < neededEmptyLines; i++) {
-                    const emptyLine = document.createElement('div');
-                    emptyLine.className = 'subject-line';
-                    emptyLine.innerHTML = `
+                if (selectedIndex !== null) {
+                    // Düzenleme modu - mevcut satırı güncelle
+                    const existingSubject = dayBox.querySelector(`.subject-line[data-index="${selectedIndex}"]`);
+                    if (existingSubject) {
+                        existingSubject.dataset.subject = subjectName;
+                        existingSubject.dataset.notes = subjectNotes;
+                        
+                        // Görüntüleme metnini güncelle
+                        let displayText = '';
+                        if (subjectName && subjectNotes) {
+                            displayText = `<strong>${subjectName}</strong> - ${subjectNotes}`;
+                        } else if (subjectName) {
+                            displayText = `<strong>${subjectName}</strong>`;
+                        } else if (subjectNotes) {
+                            displayText = subjectNotes;
+                        }
+                        
+                        existingSubject.querySelector('.subject-text').innerHTML = displayText;
+                        
+                        // Onclick fonksiyonunu güncelle
+                        existingSubject.onclick = function() { 
+                            editSubject(selectedDay, selectedIndex, this.dataset.subject, this.dataset.notes); 
+                        };
+                    }
+                } else {
+                    // Yeni ders ekleme modu
+                    // Mevcut ders satırlarını say
+                    const existingSubjects = dayBox.querySelectorAll('.subject-line[data-subject]');
+                    
+                    // Yeni ders satırı oluştur
+                    const newSubjectLine = document.createElement('div');
+                    newSubjectLine.className = 'subject-line';
+                    newSubjectLine.draggable = true;
+                    newSubjectLine.ondragstart = drag;
+                    newSubjectLine.onclick = function() { 
+                        editSubject(selectedDay, existingSubjects.length, this.dataset.subject, this.dataset.notes); 
+                    };
+                    newSubjectLine.dataset.subject = subjectName;
+                    newSubjectLine.dataset.notes = subjectNotes;
+                    newSubjectLine.dataset.day = selectedDay;
+                    newSubjectLine.dataset.index = existingSubjects.length;
+                    
+                    // Görüntüleme metnini oluştur
+                    let displayText = '';
+                    if (subjectName && subjectNotes) {
+                        displayText = `<strong>${subjectName}</strong> - ${subjectNotes}`;
+                    } else if (subjectName) {
+                        displayText = `<strong>${subjectName}</strong>`;
+                    } else if (subjectNotes) {
+                        displayText = subjectNotes;
+                    }
+                    
+                    newSubjectLine.innerHTML = `
                         <div class="subject-dot"></div>
-                        <div class="subject-text"></div>
+                        <div class="subject-text">${displayText}</div>
                     `;
-                    dayBox.appendChild(emptyLine);
+                    
+                    // Ders satırını ekle
+                    dayBox.appendChild(newSubjectLine);
+                    
+                    // Boş satırları yeniden düzenle
+                    const allLines = dayBox.querySelectorAll('.subject-line');
+                    const filledLines = dayBox.querySelectorAll('.subject-line[data-subject]');
+                    
+                    // Boş satırları kaldır
+                    dayBox.querySelectorAll('.subject-line:not([data-subject])').forEach(line => line.remove());
+                    
+                    // Gerekli sayıda boş satır ekle (maksimum 7 satır)
+                    const neededEmptyLines = Math.max(0, 7 - filledLines.length);
+                    for (let i = 0; i < neededEmptyLines; i++) {
+                        const emptyLine = document.createElement('div');
+                        emptyLine.className = 'subject-line';
+                        emptyLine.onclick = function() { openAddSubjectModal(dayBox.dataset.day); };
+                        emptyLine.innerHTML = `
+                            <div class="subject-dot"></div>
+                            <div class="subject-text"></div>
+                        `;
+                        dayBox.appendChild(emptyLine);
+                    }
                 }
+                
+                // Tüm derslerin onclick fonksiyonlarını güncelle
+                updateAllSubjectOnclicks();
                 
                 // Değişiklikleri kaydet
                 saveSchedule();
