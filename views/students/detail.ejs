@@ -99,6 +99,9 @@
             <% if (student.weeklySchedule && student.weeklySchedule[0] && student.weeklySchedule[0].subjects) { %>
                 <% student.weeklySchedule[0].subjects.forEach((subject, subjectIndex) => { %>
                     <div class="subject-row d-flex align-items-center gap-3 mb-3">
+                        <div class="subject-number">
+                            <span class="badge bg-primary"><%= subjectIndex + 1 %></span>
+                        </div>
                         <div class="flex-grow-1">
                             <input type="text" 
                                    name="subjects[<%= subjectIndex %>][subject]" 
@@ -148,6 +151,53 @@ if (subjectsData && subjectsData.length > 0) {
 // Ders listesi - JSON'dan gelen verilerle oluştur
 const subjectsList = subjectsData && subjectsData.length > 0 ? subjectsData.map(subject => subject.title) : [];
 
+// Ders numaralarını güncelle (ders + konu bazında gruplama)
+function updateSubjectNumbers() {
+    const container = document.getElementById('subjectsContainer');
+    const rows = container.getElementsByClassName('subject-row');
+    
+    // Ders + konu bazında numaralandırma için gruplama
+    const subjectGroups = {};
+    Array.from(rows).forEach((row, index) => {
+        const inputs = row.getElementsByTagName('input');
+        const subjectName = inputs[0].value.trim();
+        const notes = inputs[1].value.trim();
+        
+        // Ders + konu kombinasyonuna göre grupla
+        const groupKey = `${subjectName}|${notes}`;
+        if (!subjectGroups[groupKey]) {
+            subjectGroups[groupKey] = [];
+        }
+        subjectGroups[groupKey].push({ row, index });
+    });
+    
+    // Her ders + konu grubu için numaralandırma yap
+    Object.keys(subjectGroups).forEach(groupKey => {
+        subjectGroups[groupKey].forEach((item, groupIndex) => {
+            const badge = item.row.querySelector('.subject-number .badge');
+            if (badge) {
+                badge.textContent = groupIndex + 1;
+            }
+        });
+    });
+}
+
+// Tüm ders verilerini güncelle (input isimleri + numaralar)
+function updateAllSubjectData() {
+    const container = document.getElementById('subjectsContainer');
+    const rows = container.getElementsByClassName('subject-row');
+    
+    // Input isimlerini güncelle
+    Array.from(rows).forEach((row, index) => {
+        const inputs = row.getElementsByTagName('input');
+        inputs[0].name = `subjects[${index}][subject]`;
+        inputs[1].name = `subjects[${index}][notes]`;
+    });
+    
+    // Numaraları güncelle
+    updateSubjectNumbers();
+}
+
 // Ders seçildiğinde konuları güncelle
 document.getElementById('subjectSelect').addEventListener('change', function() {
     const topicSelect = document.getElementById('topicSelect');
@@ -181,6 +231,9 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
     const subjectRow = document.createElement('div');
     subjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3';
     subjectRow.innerHTML = `
+        <div class="subject-number">
+            <span class="badge bg-primary">${subjectCount + 1}</span>
+        </div>
         <div class="flex-grow-1">
             <input type="text" 
                    name="subjects[${subjectCount}][subject]" 
@@ -210,6 +263,9 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
     `;
     
     container.appendChild(subjectRow);
+    
+    // Tüm numaraları yeniden düzenle
+    updateSubjectNumbers();
     
     // Formu sıfırla
     this.reset();
@@ -243,14 +299,48 @@ async function duplicateSubject(button) {
     if (!subject) return; // Ders adı yoksa çoğaltma
     
     const container = document.getElementById('subjectsContainer');
-    const subjectCount = container.children.length;
+    const allRows = Array.from(container.getElementsByClassName('subject-row'));
     
+    // Aynı grubun (ders+konu) en son elemanını bul
+    const groupKey = `${subject}|${notes}`;
+    let insertIndex = allRows.length; // Varsayılan olarak en sona
+    
+    for (let i = 0; i < allRows.length; i++) {
+        const currentRow = allRows[i];
+        const currentInputs = currentRow.getElementsByTagName('input');
+        const currentSubject = currentInputs[0].value.trim();
+        const currentNotes = currentInputs[1].value.trim();
+        const currentGroupKey = `${currentSubject}|${currentNotes}`;
+        
+        // Aynı grup bulunduğunda, bir sonraki farklı grubun başlangıcını bul
+        if (currentGroupKey === groupKey) {
+            // Bu grubun son elemanını bul
+            for (let j = i + 1; j < allRows.length; j++) {
+                const nextRow = allRows[j];
+                const nextInputs = nextRow.getElementsByTagName('input');
+                const nextSubject = nextInputs[0].value.trim();
+                const nextNotes = nextInputs[1].value.trim();
+                const nextGroupKey = `${nextSubject}|${nextNotes}`;
+                
+                if (nextGroupKey !== groupKey) {
+                    insertIndex = j;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    
+    // Yeni satır oluştur
     const newSubjectRow = document.createElement('div');
     newSubjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3';
     newSubjectRow.innerHTML = `
+        <div class="subject-number">
+            <span class="badge bg-primary">1</span>
+        </div>
         <div class="flex-grow-1">
             <input type="text" 
-                   name="subjects[${subjectCount}][subject]" 
+                   name="subjects[0][subject]" 
                    value="${subject}"
                    class="form-control"
                    placeholder="Ders adı"
@@ -258,7 +348,7 @@ async function duplicateSubject(button) {
         </div>
         <div class="flex-grow-1">
             <input type="text" 
-                   name="subjects[${subjectCount}][notes]" 
+                   name="subjects[0][notes]" 
                    value="${notes}"
                    class="form-control"
                    placeholder="Notlar"
@@ -276,7 +366,15 @@ async function duplicateSubject(button) {
         </button>
     `;
     
-    container.appendChild(newSubjectRow);
+    // Doğru konuma ekle
+    if (insertIndex >= allRows.length) {
+        container.appendChild(newSubjectRow);
+    } else {
+        container.insertBefore(newSubjectRow, allRows[insertIndex]);
+    }
+    
+    // Tüm input isimlerini ve numaraları yeniden düzenle
+    updateAllSubjectData();
     
     // Otomatik kaydet
     await autoSave();
@@ -287,14 +385,8 @@ async function removeSubject(button) {
     const row = button.closest('.subject-row');
     row.remove();
     
-    // Kalan derslerin indekslerini güncelle
-    const container = document.getElementById('subjectsContainer');
-    const rows = container.getElementsByClassName('subject-row');
-    Array.from(rows).forEach((row, index) => {
-        const inputs = row.getElementsByTagName('input');
-        inputs[0].name = `subjects[${index}][subject]`;
-        inputs[1].name = `subjects[${index}][notes]`;
-    });
+    // Tüm ders verilerini güncelle
+    updateAllSubjectData();
 
     // Konu seçimini sıfırla
     const topicSelect = document.getElementById('topicSelect');
@@ -326,6 +418,9 @@ async function autoSave() {
             subjects.push({ subject, notes });
         }
     });
+
+    // Ders adı değişikliklerinde numaraları güncelle
+    updateSubjectNumbers();
 
     try {
         const response = await fetch(`/students/<%= student.id %>/schedule`, {
