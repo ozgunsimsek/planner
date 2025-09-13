@@ -154,6 +154,9 @@
                                    placeholder="Notlar"
                                    onchange="autoSave()">
                         </div>
+                        <input type="hidden" 
+                               name="subjects[<%= subjectIndex %>][groupId]" 
+                               value="<%= subject.groupId || '' %>">
                         <button type="button" 
                                 onclick="duplicateSubject(this)"
                                 class="btn btn-outline-primary me-2">
@@ -221,32 +224,29 @@ if (subjectsData && subjectsData.length > 0) {
 // Ders listesi - JSON'dan gelen verilerle oluştur
 const subjectsList = subjectsData && subjectsData.length > 0 ? subjectsData.map(subject => subject.title) : [];
 
-// Ders numaralarını güncelle (ders + konu bazında gruplama)
+// Ders numaralarını güncelle (groupId bazında gruplama)
 function updateSubjectNumbers() {
     const container = document.getElementById('subjectsContainer');
     const rows = container.getElementsByClassName('subject-row');
     
-    // Ders + konu bazında numaralandırma için gruplama
+    // groupId bazında numaralandırma için gruplama
     const subjectGroups = {};
     Array.from(rows).forEach((row, index) => {
         const inputs = row.getElementsByTagName('input');
-        const subjectName = inputs[0].value.trim();
-        const notes = inputs[1].value.trim();
+        const groupId = inputs[2].value; // groupId hidden input
         
-        // Ders + konu kombinasyonuna göre grupla
-        const groupKey = `${subjectName}|${notes}`;
-        if (!subjectGroups[groupKey]) {
-            subjectGroups[groupKey] = [];
+        if (!subjectGroups[groupId]) {
+            subjectGroups[groupId] = [];
         }
-        subjectGroups[groupKey].push({ row, index });
+        subjectGroups[groupId].push({ row, index });
     });
     
-    // Her ders + konu grubu için numaralandırma ve renklendirme yap
+    // Her groupId grubu için numaralandırma ve renklendirme yap
     const groupKeys = Object.keys(subjectGroups);
-    groupKeys.forEach((groupKey, groupIndex) => {
+    groupKeys.forEach((groupId, groupIndex) => {
         const isWhiteGroup = groupIndex % 2 === 0; // Çift indeksler beyaz, tek indeksler gri
         
-        subjectGroups[groupKey].forEach((item, itemIndex) => {
+        subjectGroups[groupId].forEach((item, itemIndex) => {
             const badge = item.row.querySelector('.subject-number .badge');
             if (badge) {
                 badge.textContent = itemIndex + 1;
@@ -305,6 +305,9 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
     const container = document.getElementById('subjectsContainer');
     const subjectCount = container.children.length;
     
+    // Yeni grup ID oluştur (daha benzersiz)
+    const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_' + Math.floor(Math.random() * 10000);
+    
     const subjectRow = document.createElement('div');
     subjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3 group-white';
     subjectRow.innerHTML = `
@@ -327,6 +330,9 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
                    placeholder="Notlar"
                    onchange="autoSave()">
         </div>
+        <input type="hidden" 
+               name="subjects[${subjectCount}][groupId]" 
+               value="${groupId}">
         <button type="button" 
                 onclick="duplicateSubject(this)"
                 class="btn btn-outline-primary me-2">
@@ -372,34 +378,30 @@ async function duplicateSubject(button) {
     const inputs = row.getElementsByTagName('input');
     const subject = inputs[0].value.trim();
     const notes = inputs[1].value.trim();
+    const groupId = inputs[2].value; // groupId hidden input
     
     if (!subject) return; // Ders adı yoksa çoğaltma
     
     const container = document.getElementById('subjectsContainer');
     const allRows = Array.from(container.getElementsByClassName('subject-row'));
     
-    // Aynı grubun (ders+konu) en son elemanını bul
-    const groupKey = `${subject}|${notes}`;
+    // Aynı groupId'nin en son elemanını bul
     let insertIndex = allRows.length; // Varsayılan olarak en sona
     
     for (let i = 0; i < allRows.length; i++) {
         const currentRow = allRows[i];
         const currentInputs = currentRow.getElementsByTagName('input');
-        const currentSubject = currentInputs[0].value.trim();
-        const currentNotes = currentInputs[1].value.trim();
-        const currentGroupKey = `${currentSubject}|${currentNotes}`;
+        const currentGroupId = currentInputs[2].value; // groupId hidden input
         
         // Aynı grup bulunduğunda, bir sonraki farklı grubun başlangıcını bul
-        if (currentGroupKey === groupKey) {
+        if (currentGroupId === groupId) {
             // Bu grubun son elemanını bul
             for (let j = i + 1; j < allRows.length; j++) {
                 const nextRow = allRows[j];
                 const nextInputs = nextRow.getElementsByTagName('input');
-                const nextSubject = nextInputs[0].value.trim();
-                const nextNotes = nextInputs[1].value.trim();
-                const nextGroupKey = `${nextSubject}|${nextNotes}`;
+                const nextGroupId = nextInputs[2].value;
                 
-                if (nextGroupKey !== groupKey) {
+                if (nextGroupId !== groupId) {
                     insertIndex = j;
                     break;
                 }
@@ -408,7 +410,7 @@ async function duplicateSubject(button) {
         }
     }
     
-    // Yeni satır oluştur
+    // Yeni satır oluştur (aynı groupId ile)
     const newSubjectRow = document.createElement('div');
     newSubjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3 group-white';
     newSubjectRow.innerHTML = `
@@ -431,6 +433,9 @@ async function duplicateSubject(button) {
                    placeholder="Notlar"
                    onchange="autoSave()">
         </div>
+        <input type="hidden" 
+               name="subjects[0][groupId]" 
+               value="${groupId}">
         <button type="button" 
                 onclick="duplicateSubject(this)"
                 class="btn btn-outline-primary me-2">
@@ -490,9 +495,10 @@ async function autoSave() {
         const inputs = row.getElementsByTagName('input');
         const subject = inputs[0].value.trim();
         const notes = inputs[1].value.trim();
+        const groupId = inputs[2].value; // groupId hidden input
         
         if (subject) {
-            subjects.push({ subject, notes });
+            subjects.push({ subject, notes, groupId });
         }
     });
 

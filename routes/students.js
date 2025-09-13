@@ -79,17 +79,22 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
         );
 
         // Dersleri günlere akıllı dağıt (grup bazlı)
-        const weeklySchedule = global.schoolDays.map(day => ({ day, subjects: [] }));
+        const schoolDays = global.schoolDays || ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+        const weeklySchedule = schoolDays.map(day => ({ day, subjects: [] }));
         
-        // 1. Dersleri ders+konu bazında grupla
+        // 1. Dersleri groupId bazında grupla
         const subjectGroups = {};
         filteredSubjects.forEach(subject => {
-            const groupKey = `${subject.subject}|${subject.notes || ''}`;
+            const groupKey = subject.groupId || 'default';
             if (!subjectGroups[groupKey]) {
                 subjectGroups[groupKey] = [];
             }
             subjectGroups[groupKey].push(subject);
         });
+        
+        console.log('Toplam ders sayısı:', filteredSubjects.length);
+        console.log('Grup sayısı:', Object.keys(subjectGroups).length);
+        console.log('Gruplar:', Object.keys(subjectGroups).map(key => `${key}: ${subjectGroups[key].length} ders`));
         
         // 2. Grupları boyutlarına göre sırala (büyükten küçüğe)
         const sortedGroups = Object.values(subjectGroups).sort((a, b) => b.length - a.length);
@@ -110,10 +115,16 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
             // Geçerli başlangıç günlerini belirle (döngüsel)
             const validStartDays = [];
             for (let i = 0; i < 7; i++) {
-                const dayIndex = (todayIndex + i) % global.schoolDays.length;
-                if (i <= 7 - groupSize) {
+                const dayIndex = (todayIndex + i) % schoolDays.length;
+                if (i <= 7 - groupSize) { // Orijinal formül doğru
                     validStartDays.push(dayIndex);
                 }
+            }
+            
+            // Geçerli gün yoksa atla
+            if (validStartDays.length === 0) {
+                console.log('Geçerli gün bulunamadı, grup atlanıyor');
+                return;
             }
             
             // En boş günü bul (eşitlik durumunda bugüne en yakın)
@@ -126,26 +137,80 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
                 return diff >= 0 ? diff : totalDays + diff;
             };
             
-            let minDistance = getCircularDistance(bestStartDay, todayIndex, global.schoolDays.length);
+            let minDistance = getCircularDistance(bestStartDay, todayIndex, schoolDays.length);
             
-            validStartDays.forEach(dayIndex => {
-                const currentSubjects = weeklySchedule[dayIndex].subjects.length;
-                const currentDistance = getCircularDistance(dayIndex, todayIndex, global.schoolDays.length);
-                
-                // Önce ders sayısına bak, sonra mesafeye bak
-                if (currentSubjects < minSubjects) {
-                    minSubjects = currentSubjects;
-                    bestStartDay = dayIndex;
-                    minDistance = currentDistance;
-                } else if (currentSubjects === minSubjects && currentDistance < minDistance) {
-                    bestStartDay = dayIndex;
-                    minDistance = currentDistance;
+            // Aralıktaki en az dolu günleri bul
+            const subjectCounts = validStartDays.map(dayIndex => weeklySchedule[dayIndex].subjects.length);
+            const minCount = Math.min(...subjectCounts);
+            const minCountDays = validStartDays.filter(dayIndex => weeklySchedule[dayIndex].subjects.length === minCount);
+            
+            if (minCountDays.length > 1) {
+                // Birden fazla en az dolu gün var, haftanın diğer günlerinde daha az dolu olan var mı?
+                const otherDays = [];
+                for (let i = 0; i < schoolDays.length; i++) {
+                    if (!validStartDays.includes(i)) {
+                        otherDays.push(i);
+                    }
                 }
-            });
+                
+                const otherDaysCounts = otherDays.map(dayIndex => weeklySchedule[dayIndex].subjects.length);
+                const minOtherCount = Math.min(...otherDaysCounts);
+                
+                if (minOtherCount < minCount) {
+                    // Diğer günlerde daha az dolu olan var, hangi günden başlarsak o güne koyabiliriz?
+                    const targetDayIndex = otherDays.find(dayIndex => weeklySchedule[dayIndex].subjects.length === minOtherCount);
+                    const candidates = [];
+                    
+                    minCountDays.forEach(dayIndex => {
+                        // Bu günden başlayarak hedef güne kadar sığar mı?
+                        const endDay = (dayIndex + groupSize - 1) % schoolDays.length;
+                        if (endDay === targetDayIndex) {
+                            candidates.push(dayIndex);
+                        }
+                    });
+                    
+                    if (candidates.length > 0) {
+                        // Hedef güne sığan günlerden bugüne en yakın olanı seç
+                        let bestCandidate = candidates[0];
+                        let minCandidateDistance = getCircularDistance(candidates[0], todayIndex, schoolDays.length);
+                        
+                        candidates.forEach(dayIndex => {
+                            const distance = getCircularDistance(dayIndex, todayIndex, schoolDays.length);
+                            if (distance < minCandidateDistance) {
+                                bestCandidate = dayIndex;
+                                minCandidateDistance = distance;
+                            }
+                        });
+                        
+                        bestStartDay = bestCandidate;
+                    } else {
+                        // Hedef güne sığan gün yok, normal algoritma
+                        bestStartDay = minCountDays[0];
+                    }
+                } else {
+                    // Diğer günlerde daha az dolu olan yok, normal algoritma
+                    bestStartDay = minCountDays[0];
+                }
+            } else {
+                // Normal algoritma: En az ders olan günü seç
+                validStartDays.forEach(dayIndex => {
+                    const currentSubjects = weeklySchedule[dayIndex].subjects.length;
+                    const currentDistance = getCircularDistance(dayIndex, todayIndex, schoolDays.length);
+                    
+                    if (currentSubjects < minSubjects) {
+                        minSubjects = currentSubjects;
+                        bestStartDay = dayIndex;
+                        minDistance = currentDistance;
+                    } else if (currentSubjects === minSubjects && currentDistance < minDistance) {
+                        bestStartDay = dayIndex;
+                        minDistance = currentDistance;
+                    }
+                });
+            }
             
             // Grubu en uygun günden başlayarak yerleştir
             for (let i = 0; i < groupSize; i++) {
-                const targetDayIndex = (bestStartDay + i) % global.schoolDays.length;
+                const targetDayIndex = (bestStartDay + i) % schoolDays.length;
                 weeklySchedule[targetDayIndex].subjects.push(group[i]);
             }
         });
