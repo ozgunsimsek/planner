@@ -78,6 +78,30 @@
     </div>
 </div>
 
+<!-- Rutin Girişi -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h4 class="mb-0">
+            <i class="bi bi-arrow-repeat me-2"></i>
+            Haftalık Rutin
+        </h4>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Rutin</label>
+                <input type="text" class="form-control" id="weeklyRoutine" placeholder="Örn: Ezber, Paragraf, Test Çözme" value="<%= student.weeklyRoutine || '' %>">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="button" class="btn btn-success w-100" onclick="saveRoutine()">
+                    <i class="bi bi-check-lg me-2"></i>
+                    Rutin Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Ders Ekleme Formu -->
 <div class="card mb-4">
     <div class="card-header">
@@ -168,6 +192,40 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+// Rutin kaydetme fonksiyonu
+async function saveRoutine() {
+    const routine = document.getElementById('weeklyRoutine').value.trim();
+    
+    try {
+        const response = await fetch(`/students/<%= student.id %>/routine`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ routine: routine })
+        });
+        
+        if (response.ok) {
+            // Başarı mesajı göster
+            const button = document.querySelector('button[onclick="saveRoutine()"]');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check-lg me-2"></i>Kaydedildi!';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-success');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('btn-outline-success');
+                button.classList.add('btn-success');
+            }, 2000);
+        } else {
+            console.error('Rutin kaydedilirken hata oluştu');
+        }
+    } catch (error) {
+        console.error('Hata:', error);
+    }
+}
+
 // Ders-Konu eşleştirmeleri - JSON'dan gelen verilerle oluştur
 const subjectsData = <%- JSON.stringify(global.testData.subjects || []) %>;
 const subjectTopics = {};

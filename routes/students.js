@@ -146,4 +146,26 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
     }
 });
 
+// Rutin kaydetme
+router.post('/:id/routine', isAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { routine } = req.body;
+        
+        // Öğrenciyi bul
+        const studentIndex = global.testData.students.findIndex(s => s.id === id && s.coach === req.session.userId);
+        if (studentIndex === -1) {
+            return res.status(404).json({ error: 'Öğrenci bulunamadı' });
+        }
+        
+        // Rutini kaydet
+        global.testData.students[studentIndex].weeklyRoutine = routine;
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Rutin kaydetme hatası:', error);
+        res.status(500).json({ error: 'Rutin kaydedilirken bir hata oluştu' });
+    }
+});
+
 module.exports = router; 
