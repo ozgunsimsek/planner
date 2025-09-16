@@ -13,7 +13,6 @@ try {
     const subjectsContent = fs.readFileSync(subjectsPath, 'utf8');
     subjectsData = JSON.parse(subjectsContent);
 } catch (error) {
-    console.error('Dersler JSON dosyası okunamadı:', error);
     subjectsData = [];
 }
 
@@ -25,13 +24,22 @@ global.sections = [...global.schoolDays, 'Notlar'];
 
 // Test verileri
 global.testData = {
-    coaches: [{
-        id: '1',
-        username: 'furkan',
-        password: '123', // Gerçek uygulamada hash'lenmiş olmalı
-        name: 'Test Koç',
-        email: 'test@example.com'
-    }],
+    coaches: [
+        {
+            id: '1',
+            username: 'furkan',
+            password: '123', // Gerçek uygulamada hash'lenmiş olmalı
+            name: 'Test Koç',
+            email: 'test@example.com'
+        },
+        {
+            id: '2',
+            username: 'demo_user',
+            password: 'kf74Hf3jsa', // Gerçek uygulamada hash'lenmiş olmalı
+            name: 'Test Koç 2',
+            email: 'test2@example.com'
+        }
+    ],
     subjects: subjectsData
 };
 

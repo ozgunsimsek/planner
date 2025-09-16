@@ -27,7 +27,6 @@ async function createTestUser() {
         
         mongoose.connection.close();
     } catch (error) {
-        console.error('Hata:', error);
         mongoose.connection.close();
     }
 }

@@ -817,7 +817,6 @@
         function saveNotes(notesText, day) {
             // Notlar günü için özel kaydetme
             if (day === 'Notlar') {
-                console.log('Notlar kaydedildi:', notesText);
                 // Burada notları localStorage'a veya sunucuya kaydedebilirsiniz
                 localStorage.setItem('weeklyNotes', notesText);
             }
@@ -851,11 +850,11 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    console.error('Program kaydedilirken bir hata oluştu');
+                    // Program kaydedilirken hata oluştu
                 }
             })
             .catch(error => {
-                console.error('Hata:', error);
+                // Hata oluştu
             });
         }
 

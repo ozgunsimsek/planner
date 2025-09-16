@@ -92,9 +92,6 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
             subjectGroups[groupKey].push(subject);
         });
         
-        console.log('Toplam ders sayısı:', filteredSubjects.length);
-        console.log('Grup sayısı:', Object.keys(subjectGroups).length);
-        console.log('Gruplar:', Object.keys(subjectGroups).map(key => `${key}: ${subjectGroups[key].length} ders`));
         
         // 2. Grupları boyutlarına göre sırala (büyükten küçüğe)
         const sortedGroups = Object.values(subjectGroups).sort((a, b) => b.length - a.length);
@@ -124,7 +121,6 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
             
             // Geçerli gün yoksa atla
             if (validStartDays.length === 0) {
-                console.log('Geçerli gün bulunamadı, grup atlanıyor');
                 return;
             }
             
@@ -221,7 +217,6 @@ router.post('/:id/schedule', isAuthenticated, async (req, res) => {
 
         res.json({ success: true });
     } catch (error) {
-        console.error('Program güncelleme hatası:', error);
         res.status(500).json({ error: 'Program güncellenirken bir hata oluştu' });
     }
 });
@@ -250,7 +245,6 @@ router.post('/:id/routine', isAuthenticated, async (req, res) => {
         
         res.json({ success: true });
     } catch (error) {
-        console.error('Rutin kaydetme hatası:', error);
         res.status(500).json({ error: 'Rutin kaydedilirken bir hata oluştu' });
     }
 });

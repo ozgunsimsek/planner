@@ -217,11 +217,9 @@ async function saveRoutine() {
                 button.classList.remove('btn-outline-success');
                 button.classList.add('btn-success');
             }, 2000);
-        } else {
-            console.error('Rutin kaydedilirken hata oluştu');
         }
     } catch (error) {
-        console.error('Hata:', error);
+        // Hata oluştu
     }
 }
 
@@ -573,10 +571,10 @@ async function autoSave() {
         });
         
         if (!response.ok) {
-            console.error('Program kaydedilirken bir hata oluştu');
+            // Program kaydedilirken hata oluştu
         }
     } catch (error) {
-        console.error('Hata:', error);
+        // Hata oluştu
     }
 }
 
