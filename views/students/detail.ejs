@@ -43,6 +43,19 @@
             display: flex;
             justify-content: center;
         }
+
+        /* Grup ayırımı - badge'ler için background */
+        .subject-row.group-white .badge {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #e9ecef;
+        }
+
+        .subject-row.group-gray .badge {
+            background-color: #e3f2fd !important;
+            color: #000000 !important;
+            border: 1px solid #bbdefb;
+        }
     </style>
 </head>
 
@@ -305,8 +318,22 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
     const container = document.getElementById('subjectsContainer');
     const subjectCount = container.children.length;
     
-    // Yeni grup ID oluştur (daha benzersiz)
-    const groupId = 'group_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_' + Math.floor(Math.random() * 10000);
+    // Aynı ders için mevcut groupId'yi bul veya yeni oluştur
+    let groupId = '';
+    const existingRows = container.getElementsByClassName('subject-row');
+    for (let i = 0; i < existingRows.length; i++) {
+        const existingInputs = existingRows[i].getElementsByTagName('input');
+        const existingSubject = existingInputs[0].value.trim();
+        if (existingSubject === subject) {
+            groupId = existingInputs[2].value; // groupId hidden input
+            break;
+        }
+    }
+    
+    // Eğer aynı ders bulunamadıysa yeni groupId oluştur
+    if (!groupId) {
+        groupId = 'group_' + subject.replace(/\s+/g, '_') + '_' + Date.now();
+    }
     
     const subjectRow = document.createElement('div');
     subjectRow.className = 'subject-row d-flex align-items-center gap-3 mb-3 group-white';
@@ -345,7 +372,38 @@ document.getElementById('addSubjectForm').addEventListener('submit', async funct
         </button>
     `;
     
-    container.appendChild(subjectRow);
+    // Aynı dersin grubunun sonuna ekle
+    const allRows = Array.from(container.getElementsByClassName('subject-row'));
+    let insertIndex = allRows.length; // Varsayılan olarak en sona
+    
+    for (let i = 0; i < allRows.length; i++) {
+        const currentRow = allRows[i];
+        const currentInputs = currentRow.getElementsByTagName('input');
+        const currentGroupId = currentInputs[2].value; // groupId hidden input
+        
+        // Aynı grup bulunduğunda, bir sonraki farklı grubun başlangıcını bul
+        if (currentGroupId === groupId) {
+            // Bu grubun son elemanını bul
+            for (let j = i + 1; j < allRows.length; j++) {
+                const nextRow = allRows[j];
+                const nextInputs = nextRow.getElementsByTagName('input');
+                const nextGroupId = nextInputs[2].value;
+                
+                if (nextGroupId !== groupId) {
+                    insertIndex = j;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+    
+    // Doğru konuma ekle
+    if (insertIndex >= allRows.length) {
+        container.appendChild(subjectRow);
+    } else {
+        container.insertBefore(subjectRow, allRows[insertIndex]);
+    }
     
     // Tüm numaraları yeniden düzenle
     updateSubjectNumbers();
