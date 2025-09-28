@@ -35,7 +35,7 @@ global.testData = {
         {
             id: '2',
             username: 'demo_user',
-            password: 'kf74Hf3jsa', // Gerçek uygulamada hash'lenmiş olmalı
+            password: 'kf74Hf3jsa669', // Gerçek uygulamada hash'lenmiş olmalı
             name: 'Test Koç 2',
             email: 'test2@example.com'
         }
